@@ -1,5 +1,8 @@
 # Untitled RPG Strategy Game
 
+## Setup
+
+`npm install`
 
 ## To Run
 
