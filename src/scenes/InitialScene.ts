@@ -1,19 +1,31 @@
-export default class InitialScene extends Phaser.Scene {
-  game: Phaser.Game;
-  info: Phaser.GameObjects.Text;
+import * as Pixi from "pixi.js";
+export default class InitialScene {
+  testText: Pixi.Text;
+  info: Pixi.Text;
   tick: number;
 
-  preload() {
-    console.log('preload')
-  }
-
-  create() {
-    this.info = this.add.text(10, 10, 'text-goes-here', { font: '12px Arial', fill: '#FFF' });
+  create(g) {
     this.tick = 0;
+
+    this.info = new Pixi.Text("");
+    this.info.x = 10;
+    this.info.y = 10;
+
+    this.testText = new Pixi.Text("Press Enter");
+    this.testText.x = 300;
+    this.testText.y = 400;
+
+    //TODO: Don't pass App, but instead pass Game, and add all needed utilities into Game directly.
+
+    g.app.stage.addChild(this.info);
+    g.app.stage.addChild(this.testText);
   }
 
-  update() { 
+  update(g, delta) {
     this.tick += 1;
-    this.info.setText(`[TICK(${this.tick.toLocaleString()}), FPS(${Math.floor(this.game.loop.actualFps)})]`);
+    this.info.text = `
+    [ TICK(${this.tick.toLocaleString()}), 
+      CURRENT_KEYS(${Object.entries(g.downKeys).filter((key) => key[1])}))
+    ]`;
   }
 }

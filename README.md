@@ -10,6 +10,13 @@
 
 ## Deps
 
-  -  PhaserJS (Version 3) (https://phaser.io/) (But looking at the github docs/source is better)
-  -  Typescript
-  -  Parcel (The Build Tool)
+- PixiJS
+- Typescript
+- Parcel (The Build Tool)
+
+## TODO
+
+- Create Base Scene and Initial Scene
+- Add Helpers for Text, Buttons, and Score
+- Add Global Store for updating Data.
+- Follow TEA Pattern?
