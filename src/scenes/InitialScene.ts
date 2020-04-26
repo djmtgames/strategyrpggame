@@ -10,13 +10,7 @@ export default class InitialScene extends Scene {
   graphics: Pixi.Graphics;
 
   create(g: Game) {
-    /*
-      Instead of hacking the way data is created, lets create a store on the game
-      which will hold references to data we actually care about.
-    */
-    if (this.tick === undefined) {
-      this.tick = 0;
-    }
+    g.state.register("tick", 0);
 
     this.info = new Pixi.Text("");
     this.info.x = 100;
@@ -34,9 +28,9 @@ export default class InitialScene extends Scene {
   }
 
   update(g: Game, delta: number) {
-    this.tick += 1;
+    g.state.map("tick", (tick: number) => tick + 1);
     this.info.text = `
-    [TICK(${this.tick.toLocaleString()}), 
+    [TICK(${g.state.fetch("tick", 0).toLocaleString()}), 
      CURRENT_KEYS(Enter:${g.keys.down["Enter"]}))
      MOUSE(${g.mouse.current.pos.x},${g.mouse.current.pos.y} => ${
       g.mouse.current.buttons.left

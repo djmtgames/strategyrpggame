@@ -1,12 +1,13 @@
 import InitialScene from "./scenes/InitialScene";
-import Game from "./Game";
+import { Config, Game } from "./Game";
 
-const Config = {
+const config: Config = {
   width: 800,
   height: 600,
-  scene: InitialScene,
+  scene: new InitialScene(),
 };
 
 window.onload = () => {
-  new Game(Config);
+  console.log("--- Starting ---");
+  new Game(config);
 };

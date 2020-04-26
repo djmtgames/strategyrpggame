@@ -21,6 +21,7 @@ export default class Keys {
       this.down[e.code] = false;
       this.history.up.push(e.code);
     });
+
     document.addEventListener("keydown", (e) => {
       this.down[e.code] = true;
       this.history.down.push(e.code);

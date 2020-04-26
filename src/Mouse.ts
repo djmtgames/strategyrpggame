@@ -18,6 +18,7 @@ export default class Mouse {
     pos: Point;
     buttons: { left: boolean; middle: boolean; right: boolean };
   };
+  h;
   history: {
     clicks: SizedArray<{ pos: Point; button: MouseButton }>;
     pos: SizedArray<Point>;
@@ -28,6 +29,7 @@ export default class Mouse {
       pos: { x: 0, y: 0 },
       buttons: { left: false, middle: false, right: false },
     };
+
     this.history = {
       clicks: new SizedArray(1),
       pos: new SizedArray(100),
