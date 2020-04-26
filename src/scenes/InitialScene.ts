@@ -1,7 +1,7 @@
 import * as Pixi from "pixi.js";
 import MenuScene from "./MenuScene";
 import Scene from "./Scene";
-import Game from "../Game";
+import { Game } from "../Game";
 
 export default class InitialScene extends Scene {
   testText: Pixi.Text;
@@ -19,6 +19,19 @@ export default class InitialScene extends Scene {
     this.testText = new Pixi.Text("Press Enter");
     this.testText.x = 300;
     this.testText.y = 400;
+    this.testText.interactive = true;
+    this.testText.cursor = "finger";
+    this.testText.on("pointerover", () => {
+      console.log("over");
+      this.graphics.beginFill(0xff00ff);
+      this.graphics.drawRect(
+        this.testText.x,
+        this.testText.y,
+        this.testText.width,
+        this.testText.height
+      );
+      this.graphics.endFill();
+    });
 
     this.graphics = new Pixi.Graphics();
 
@@ -36,7 +49,7 @@ export default class InitialScene extends Scene {
       g.mouse.current.buttons.left
     }
       ${g.mouse.history.pos.internals
-        .map((p) => [p.x, p.y].join(", "))
+        .map((p: { x: number; y: number }) => [p.x, p.y].join(", "))
         .join("|")})
     ]`;
 

@@ -4,12 +4,6 @@ export default class Keys {
   down: { [x: string]: boolean };
   history: { down: SizedArray<string>; up: SizedArray<string> };
 
-  /*
-    TODO:
-      - Make internal DSs private
-      - Add helper methods for accessing data
-  */
-
   constructor() {
     this.down = {};
     this.history = {

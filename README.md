@@ -15,8 +15,3 @@
 - Parcel (The Build Tool)
 
 ## TODO
-
-- Create Base Scene and Initial Scene
-- Add Helpers for Text, Buttons, and Score
-- Add Global Store for updating Data.
-- Follow TEA Pattern?
