@@ -1,5 +1,5 @@
 import Scene from "./Scene";
-import Game from "../Game";
+import { Game } from "../Game";
 
 export default class MenuScene extends Scene {
   create(g: Game) {
