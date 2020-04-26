@@ -1,6 +1,7 @@
 import Scene from "./Scene";
 import * as PIXI from "pixi.js";
 import { Game } from "../Game";
+import GameSceneAssets from "../assets/GameSceneAssets";
 
 interface Resource {
   name: string;
@@ -50,6 +51,8 @@ export default class GameScene extends Scene {
   populationResource: PIXI.Text;
   endTurnButton: any;
   create(g: Game) {
+    new GameSceneAssets(g);
+
     this.resources = { Food, Population, Happiness, Gold };
     this.purchaseContainer = new PIXI.Container();
     this.resourceContainer = new PIXI.Container();
@@ -113,18 +116,18 @@ export default class GameScene extends Scene {
       fontFamily: "Courier",
       fontWeight: "Bold",
     });
-    this.goldResource.y = 25;
+    this.goldResource.y = 30;
     this.populationResource = new PIXI.Text("XXX POPL", {
       fontFamily: "Courier",
       fontWeight: "Bold",
     });
-    this.populationResource.y = 50;
+    this.populationResource.y = 60;
 
     this.purchaseContainer.addChild(this.foodPurchase);
     this.resourceContainer.addChild(this.foodResource);
     this.resourceContainer.addChild(this.goldResource);
     this.resourceContainer.addChild(this.populationResource);
-    this.resourceContainer.x = 650;
+    this.resourceContainer.x = 700;
 
     g.app.stage.addChild(this.purchaseContainer);
     g.app.stage.addChild(this.resourceContainer);
@@ -132,8 +135,8 @@ export default class GameScene extends Scene {
   }
 
   update(g: Game) {
-    this.foodResource.text = `${this.resources["Food"].value} ${this.resources["Food"].name}`;
-    this.goldResource.text = `${this.resources["Gold"].value} ${this.resources["Gold"].name}`;
-    this.populationResource.text = `${this.resources["Population"].value} ${this.resources["Population"].name}`;
+    this.foodResource.text = `${this.resources["Food"].value}`;
+    this.goldResource.text = `${this.resources["Gold"].value}`;
+    this.populationResource.text = `${this.resources["Population"].value}`;
   }
 }
