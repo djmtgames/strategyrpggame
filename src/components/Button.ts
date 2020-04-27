@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import { Game } from "../Game";
 interface ButtonConfig {
   width: number;
   height: number;
@@ -30,6 +31,10 @@ export default class Button {
       config.mouseout(this);
     });
     this.isActive = config.isActive;
+  }
+
+  addToStage(g: Game): void {
+    g.app.stage.addChild(this.pixi);
   }
 
   mouseOver(): boolean {

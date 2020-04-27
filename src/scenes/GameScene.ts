@@ -6,6 +6,8 @@ import AttackEvent from "../events/AttackEvent";
 import SizedSet from "../utils/SizedSet";
 import EventQueue from "../events/EventQueue";
 import Button from "../components/Button";
+import ScrollBox from "../components/ScrollBox";
+import GameErrorEvent from "../events/GameErrorEvent";
 
 interface Resource {
   name: string;
@@ -127,7 +129,7 @@ export default class GameScene extends Scene {
   selectedChoices: SizedSet<number>;
   endTurnButton: any;
   turnNumber: number;
-  eventQueue: PIXI.Text = new PIXI.Text("");
+  eventQueue: ScrollBox = new ScrollBox({ onUpdate: NOOP });
 
   constructor() {
     super();
@@ -146,12 +148,8 @@ export default class GameScene extends Scene {
     }));
     this.choices = [];
     this.turnNumber = 1;
-<<<<<<< HEAD
-    this.selectedChoices = [];
     this.gameSceneAssets = new GameSceneAssets()
-=======
     this.selectedChoices = new SizedSet(2);
->>>>>>> Adding SizedSet and Button class to clean up logic.
     this.purchaseContainer = new PIXI.Container();
     this.resourceContainer = new PIXI.Container();
     this.decisionContainer = new PIXI.Container();
@@ -340,7 +338,7 @@ export default class GameScene extends Scene {
           this.resources["Gold"].value -= lostGold;
           g.events.add(
             new AttackEvent(
-              `You were attacked by bandits! You lost ${lostFood} food and ${lostGold} gold!`
+              `[Turn ${this.turnNumber}] You were attacked by bandits! You lost ${lostfood} food and ${lostgold} gold!`
             )
           );
         }
@@ -380,133 +378,18 @@ export default class GameScene extends Scene {
         }
 
         this.turnNumber++;
-<<<<<<< HEAD
-        this.selectedChoices = [];
-        this.choices.forEach(choice => {
-          choice.style = defaultChoiceStyle;
-        });
-=======
         this.selectedChoices.empty();
->>>>>>> Adding SizedSet and Button class to clean up logic.
       } else {
-        alert("You must chose 2 actions to end your turn.");
+        g.events.add(
+          new GameErrorEvent("You must chose 2 actions to end your turn.")
+        );
       }
     });
   }
 
-<<<<<<< HEAD
   private setEventQueue() {
     this.eventQueue.y = 525;
   }
 
 
-=======
-    this.endTurnButton.x = 325;
-    this.endTurnButton.y = 500;
-
-    this.foodPurchase = new PIXI.Text("Purchase 20 food for 5G");
-    this.foodPurchase.interactive = true;
-    this.foodPurchase.buttonMode = true;
-    this.foodPurchase.on("pointerup", () => {
-      if (this.resources["Gold"].value < 20) {
-        return;
-      }
-      this.resources["Food"].value += 20;
-      this.resources["Gold"].value -= 5;
-    });
-
-    // Create a button for each possible decision available.
-    this.decisions.map(({ label, decision }) => {
-      let currentOption: Button;
-      currentOption = new Button({
-        text: decision.name,
-        width: 100,
-        height: 50,
-        isActive: (b) => {
-          if (this.selectedChoices.contains(decision.value)) {
-            if (b.mouseOver()) {
-              b.pixi.style = choiceStyles.selectedHovered;
-            } else {
-              b.pixi.style = choiceStyles.selected;
-            }
-          } else {
-            if (b.mouseOver()) {
-              b.pixi.style = choiceStyles.hover;
-            } else {
-              b.pixi.style = choiceStyles.default;
-            }
-          }
-        },
-        mouseover: NOOP,
-        mouseout: NOOP,
-        click: (b) => {
-          this.selectedChoices.push(decision.value);
-        },
-      });
-      this.choices.push(currentOption);
-      return { currentOption, decision };
-    });
-
-    this.foodResource = new PIXI.Text("XXX FOOD", {
-      fontFamily: "Courier",
-      fontWeight: "Bold",
-    });
-    this.goldResource = new PIXI.Text("XXX GOLD", {
-      fontFamily: "Courier",
-      fontWeight: "Bold",
-    });
-    this.goldResource.y = 30;
-    this.populationResource = new PIXI.Text("XXX POPL", {
-      fontFamily: "Courier",
-      fontWeight: "Bold",
-    });
-    this.populationResource.y = 60;
-
-    this.foodResource = new PIXI.Text("XXX FOOD", {
-      fontFamily: "Courier",
-      fontWeight: "Bold",
-    });
-
-    this.turnDisplay = new PIXI.Text("XXX TURN", {
-      fontFamily: "Courier",
-      fontWeight: "Bold",
-    });
-    this.turnDisplay.y = 100;
-
-    this.purchaseContainer.addChild(this.foodPurchase);
-    this.resourceContainer.addChild(this.foodResource);
-    this.resourceContainer.addChild(this.goldResource);
-    this.resourceContainer.addChild(this.populationResource);
-    this.resourceContainer.addChild(this.turnDisplay);
-    this.resourceContainer.x = 650;
-
-    this.choices.forEach((choice, index) => {
-      choice.setY(30 * index);
-      this.decisionContainer.addChild(choice.pixi);
-    });
-    this.decisionContainer.x = 200;
-    this.decisionContainer.y = 300;
-
-    g.app.stage.addChild(this.purchaseContainer);
-    g.app.stage.addChild(this.resourceContainer);
-    g.app.stage.addChild(this.decisionContainer);
-    g.app.stage.addChild(this.endTurnButton);
-    g.app.stage.addChild(this.eventQueue);
-  }
-
-  update(g: Game) {
-    this.choices.map((b) => x.update());
-    this.foodResource.text = `${this.resources["Food"].value} ${this.resources["Food"].name}`;
-    this.goldResource.text = `${this.resources["Gold"].value} ${this.resources["Gold"].name}`;
-    this.populationResource.text = `${this.resources["Population"].value} ${this.resources["Population"].name}`;
-    this.turnDisplay.text = `Turn ${this.turnNumber}`;
-
-    g.events
-      .all()
-      .reverse()
-      .forEach((e) => {
-        this.eventQueue.text += e.display() + "\n";
-      });
-  }
->>>>>>> Adding SizedSet and Button class to clean up logic.
 }
