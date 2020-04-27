@@ -9,11 +9,9 @@ export default class GameSceneAssets {
   }
 
   private foodAssets(container: Pixi.Container) {
-    const asset = Pixi.Sprite.from(
-      require("./images/garlic.png")
-    );
+    const asset = Pixi.Sprite.from(require("./images/garlic.png"));
 
-    asset.x = 0
+    asset.x = 0;
     asset.y = 0;
     asset.height = 25;
     asset.width = 25;
@@ -21,11 +19,9 @@ export default class GameSceneAssets {
   }
 
   private goldAssets(container: Pixi.Container) {
-    const asset = Pixi.Sprite.from(
-      require("./images/gold.png")
-    );
+    const asset = Pixi.Sprite.from(require("./images/gold.png"));
 
-    asset.x = 0
+    asset.x = 0;
     asset.y = 30;
     asset.height = 25;
     asset.width = 25;
@@ -33,11 +29,9 @@ export default class GameSceneAssets {
   }
 
   private populationAssets(container: Pixi.Container) {
-    const asset = Pixi.Sprite.from(
-      require("./images/peasant.png")
-    );
+    const asset = Pixi.Sprite.from(require("./images/peasant.png"));
 
-    asset.x = 0
+    asset.x = 0;
     asset.y = 60;
     asset.height = 25;
     asset.width = 25;

@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/Main.ts",
   "scripts": {
-    "start": "npx parcel index.html"
+    "start": "npx prettier --write src/ && npx parcel index.html"
   },
   "author": "",
   "license": "",

@@ -353,4 +353,6 @@ export default class GameScene extends Scene {
   private setEventQueue() {
     this.eventQueue.y = 525;
   }
+
+
 }
