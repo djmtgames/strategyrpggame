@@ -11,10 +11,11 @@ interface ButtonConfig {
 
 export default class Button {
   pixi: PIXI.Text;
-  x: number = 0;
-  y: number = 0;
+  private x: number = 0;
+  private y: number = 0;
   private isMouseOver = false;
   private isActive: (_: Button) => void;
+
   constructor(config: ButtonConfig) {
     this.pixi = new PIXI.Text(config.text);
     this.pixi.interactive = true;
@@ -35,8 +36,14 @@ export default class Button {
     return this.isMouseOver;
   }
 
-  setY(n: number) {
+  setY(n: number): this {
     this.pixi.y = n;
+    return this;
+  }
+
+  setX(n: number): this {
+    this.pixi.x = n;
+    return this;
   }
 
   update() {

@@ -495,13 +495,12 @@ export default class GameScene extends Scene {
   }
 
   update(g: Game) {
-    this.choices.map((b) => b.update());
+    this.choices.map((b) => x.update());
     this.foodResource.text = `${this.resources["Food"].value} ${this.resources["Food"].name}`;
     this.goldResource.text = `${this.resources["Gold"].value} ${this.resources["Gold"].name}`;
     this.populationResource.text = `${this.resources["Population"].value} ${this.resources["Population"].name}`;
     this.turnDisplay.text = `Turn ${this.turnNumber}`;
 
-    this.eventQueue.text = "";
     g.events
       .all()
       .reverse()
