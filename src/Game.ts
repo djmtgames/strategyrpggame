@@ -3,6 +3,7 @@ import Scene from "./scenes/Scene";
 import Keys from "./Keys";
 import Mouse from "./Mouse";
 import StateManager from "./StateManager";
+import EventQueue from "./events/EventQueue";
 
 export interface Config {
   width: number;
@@ -17,11 +18,13 @@ export class Game {
   keys: Keys;
   mouse: Mouse;
   state: StateManager;
+  events: EventQueue;
 
   constructor(config: Config) {
     this.keys = new Keys();
     this.mouse = new Mouse();
     this.state = new StateManager();
+    this.events = new EventQueue();
     this.app = new Pixi.Application({ backgroundColor: 0x109bb });
     this.activeScene = config.scene;
 
