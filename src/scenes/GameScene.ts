@@ -106,14 +106,6 @@ export default class GameScene extends Scene {
       - Map interface.
       - Details for city/fief/township/etc/etc/etc
     */
-  /*
-      - CREATE resources (Food, Population, Happiness, Gold)
-      - Manage resource gain and drains (each resource should acrew on some schedule, but go down on another)
-         - How is that visually represented?
-         - What is the interactivity involved?
-      - Map interface.
-      - Details for city/fief/township/etc/etc/etc
-    */
   resources: { [x: string]: Resource };
   decisions: { label: Button; decision: Decision }[];
   foodPurchase: PIXI.Text = new PIXI.Text("");
@@ -130,6 +122,7 @@ export default class GameScene extends Scene {
   endTurnButton: any;
   turnNumber: number;
   eventQueue: ScrollBox = new ScrollBox({ onUpdate: NOOP });
+  gameSceneAssets: GameSceneAssets = new GameSceneAssets();
 
   constructor() {
     super();
@@ -153,20 +146,19 @@ export default class GameScene extends Scene {
     this.purchaseContainer = new PIXI.Container();
     this.resourceContainer = new PIXI.Container();
     this.decisionContainer = new PIXI.Container();
-    this.eventQueue = new PIXI.Text("---");
+    this.eventQueue = new ScrollBox({ onUpdate: NOOP });
     this.endTurnButton = new PIXI.Text("End Turn");
 
     this.setPurchaseContainer();
     this.setResourceContainer();
     this.setDecisionContainer();
     this.setEndTurnButton(g);
-    this.setEventQueue();
 
     g.app.stage.addChild(this.purchaseContainer);
     g.app.stage.addChild(this.resourceContainer);
     g.app.stage.addChild(this.decisionContainer);
     g.app.stage.addChild(this.endTurnButton);
-    g.app.stage.addChild(this.eventQueue);
+    this.eventQueue.addToStage(g);
   }
 
   update(g: Game) {
@@ -174,14 +166,8 @@ export default class GameScene extends Scene {
     this.goldResource.text = `${this.resources["Gold"].value}`;
     this.populationResource.text = `${this.resources["Population"].value}`;
     this.turnDisplay.text = `Turn ${this.turnNumber}`;
-    this.eventQueue.text = "";
-
-    g.events
-      .all()
-      .reverse()
-      .forEach((e) => {
-        this.eventQueue.text += e.display() + "\n";
-      });
+    this.eventQueue.messages = g.events.all().map((x) => x.display());
+    this.eventQueue.update();
   }
 
   private setPurchaseContainer() {
@@ -227,51 +213,56 @@ export default class GameScene extends Scene {
   private setDecisionContainer() {
     this.decisionContainer.x = 200;
     this.decisionContainer.y = 300;
-
-    // Create a button for each possible decision available.
-    this.decisions.forEach((decision) => {
-      let currentOption: PIXI.Text;
-      currentOption = new PIXI.Text(decision.name);
-      currentOption.interactive = true;
-      currentOption.buttonMode = true;
-
-      currentOption.on("pointerup", () => {
-        const choiceNumber: number = decision.value;
-        const selectedChoiceIndex: number = this.selectedChoices.indexOf(
-          choiceNumber
-        );
-
-        if (selectedChoiceIndex === -1) {
-          // Add choice
-          this.selectedChoices.unshift(choiceNumber);
-        } else {
-          // Remove choice
-          this.selectedChoices.splice(selectedChoiceIndex, 1);
-        }
-
-        // Can't limit arrays in JS so we need to check the length and pop off the last one and push to the front with the new option.
-        if (this.selectedChoices.length > 2) {
-          this.selectedChoices.pop();
-        }
-
-        // Iterate through all choices and highlight only selectedChoices
-        this.choices.forEach((choice, index) => {
-          if (this.selectedChoices.indexOf(index) === -1) {
-            // Choice not selected
-            choice.style = defaultChoiceStyle;
+    this.decisions.map(({ label, decision }, idx) => {
+      let currentOption: Button;
+      currentOption = new Button({
+        text: decision.name,
+        width: 100,
+        height: 50,
+        isActive: (b) => {
+          if (this.selectedChoices.contains(decision.value)) {
+            if (b.mouseOver()) {
+              b.pixi.style = choiceStyles.selectedHovered;
+            } else {
+              b.pixi.style = choiceStyles.selected;
+            }
           } else {
-            // Choice selected
-            choice.style = selectedChoiceStyle;
+            if (b.mouseOver()) {
+              b.pixi.style = choiceStyles.hover;
+            } else {
+              b.pixi.style = choiceStyles.default;
+            }
           }
-        });
+        },
+        mouseout: (b) => {
+          if (this.selectedChoices.contains(decision.value)) {
+            b.pixi.style = choiceStyles.selected;
+          } else {
+            b.pixi.style = choiceStyles.default;
+          }
+        },
+        mouseover: (b) => {
+          b.pixi.style = choiceStyles.hover;
+        },
+        click: (b) => {
+          this.selectedChoices.push(decision.value);
+          this.decisions.forEach(({ decision }) => {
+            if (this.selectedChoices.contains(decision.value)) {
+              b.pixi.style = choiceStyles.selected;
+            } else {
+              if (b.mouseOver()) {
+                b.pixi.style = choiceStyles.hover;
+              } else {
+                b.pixi.style = choiceStyles.default;
+              }
+            }
+          });
+        },
       });
-
+      currentOption.setY(25 * idx);
+      this.decisionContainer.addChild(currentOption.pixi);
       this.choices.push(currentOption);
-    });
-
-    this.choices.forEach((choice, index) => {
-      choice.y += 30 * index;
-      this.decisionContainer.addChild(choice);
+      return { currentOption, decision };
     });
   }
 
@@ -294,7 +285,6 @@ export default class GameScene extends Scene {
       // -- Add any penalties
       // --- Generate Beginning of Turn Event\
       // Check to ensure you have chosen your 2 actions.
-      console.log(this.selectedChoices);
       if (this.selectedChoices.length() === 2) {
         this.selectedChoices.forEach({
           fn: (choice) => {
@@ -346,7 +336,7 @@ export default class GameScene extends Scene {
           this.resources["Gold"].value -= lostGold;
           g.events.add(
             new AttackEvent(
-              `[Turn ${this.turnNumber}] You were attacked by bandits! You lost ${lostfood} food and ${lostgold} gold!`
+              `[Turn ${this.turnNumber}] You were attacked by bandits! You lost ${lostFood} food and ${lostGold} gold!`
             )
           );
         }
@@ -387,15 +377,12 @@ export default class GameScene extends Scene {
 
         this.turnNumber++;
         this.selectedChoices.empty();
+        this.choices.forEach((x) => x.update());
       } else {
         g.events.add(
           new GameErrorEvent("You must chose 2 actions to end your turn.")
         );
       }
     });
-  }
-
-  private setEventQueue() {
-    this.eventQueue.y = 525;
   }
 }
