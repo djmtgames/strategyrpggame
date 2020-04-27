@@ -437,30 +437,10 @@ export default class GameScene extends Scene {
             }
           }
         },
-        mouseout: (b) => {
-          if (this.selectedChoices.contains(decision.value)) {
-            b.pixi.style = choiceStyles.selected;
-          } else {
-            b.pixi.style = choiceStyles.default;
-          }
-        },
-        mouseover: (b) => {
-          b.pixi.style = choiceStyles.hover;
-        },
+        mouseover: NOOP,
+        mouseout: NOOP,
         click: (b) => {
           this.selectedChoices.push(decision.value);
-          console.log(this.selectedChoices);
-          this.decisions.forEach(({ decision }) => {
-            if (this.selectedChoices.contains(decision.value)) {
-              b.pixi.style = choiceStyles.selected;
-            } else {
-              if (b.mouseOver()) {
-                b.pixi.style = choiceStyles.hover;
-              } else {
-                b.pixi.style = choiceStyles.default;
-              }
-            }
-          });
         },
       });
       this.choices.push(currentOption);
