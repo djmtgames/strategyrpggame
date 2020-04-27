@@ -71,7 +71,7 @@ const choiceStyles = {
 const resourceTextStyles = new PIXI.TextStyle({
   fontFamily: "Courier",
   fontWeight: "Bold",
-})
+});
 
 // These should be a class or something more complex since a lot of the logic then has to be implemented in the GameScene instead of somewhere else.
 let baseDecisions: Decision[] = [
@@ -148,7 +148,7 @@ export default class GameScene extends Scene {
     }));
     this.choices = [];
     this.turnNumber = 1;
-    this.gameSceneAssets = new GameSceneAssets()
+    this.gameSceneAssets = new GameSceneAssets();
     this.selectedChoices = new SizedSet(2);
     this.purchaseContainer = new PIXI.Container();
     this.resourceContainer = new PIXI.Container();
@@ -156,11 +156,11 @@ export default class GameScene extends Scene {
     this.eventQueue = new PIXI.Text("---");
     this.endTurnButton = new PIXI.Text("End Turn");
 
-    this.setPurchaseContainer()
-    this.setResourceContainer()
-    this.setDecisionContainer()
-    this.setEndTurnButton(g)
-    this.setEventQueue()
+    this.setPurchaseContainer();
+    this.setResourceContainer();
+    this.setDecisionContainer();
+    this.setEndTurnButton(g);
+    this.setEventQueue();
 
     g.app.stage.addChild(this.purchaseContainer);
     g.app.stage.addChild(this.resourceContainer);
@@ -237,7 +237,9 @@ export default class GameScene extends Scene {
 
       currentOption.on("pointerup", () => {
         const choiceNumber: number = decision.value;
-        const selectedChoiceIndex: number = this.selectedChoices.indexOf(choiceNumber)
+        const selectedChoiceIndex: number = this.selectedChoices.indexOf(
+          choiceNumber
+        );
 
         if (selectedChoiceIndex === -1) {
           // Add choice
@@ -321,7 +323,9 @@ export default class GameScene extends Scene {
         });
 
         // First, grow food based on current peasant population. Peasants produce a random amount in a range.
-        const foodAmount: number = randomIntFromInterval(BaseFoodProductionRange);
+        const foodAmount: number = randomIntFromInterval(
+          BaseFoodProductionRange
+        );
         console.log(
           "You grew " +
             this.resources["Population"].value * foodAmount +
@@ -332,8 +336,12 @@ export default class GameScene extends Scene {
         // --- Generate Beginning of Turn Event
         // -- Add an Event Log
         if (Math.random() > 0.8) {
-          const lostFood: number = Math.ceil(this.resources["Food"].value * 0.2);
-          const lostGold: number = Math.ceil(this.resources["Gold"].value * 0.2);
+          const lostFood: number = Math.ceil(
+            this.resources["Food"].value * 0.2
+          );
+          const lostGold: number = Math.ceil(
+            this.resources["Gold"].value * 0.2
+          );
           this.resources["Food"].value -= lostFood;
           this.resources["Gold"].value -= lostGold;
           g.events.add(
@@ -390,6 +398,4 @@ export default class GameScene extends Scene {
   private setEventQueue() {
     this.eventQueue.y = 525;
   }
-
-
 }

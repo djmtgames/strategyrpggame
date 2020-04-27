@@ -6,7 +6,8 @@
     "strict": true,
     "lib": ["dom", "esnext"],
     "target": "es6",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "traceResolution": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
