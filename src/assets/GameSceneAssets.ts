@@ -2,45 +2,45 @@ import * as Pixi from "pixi.js";
 import { Game } from "../Game";
 
 export default class GameSceneAssets {
-  constructor(g: Game) {
-    this.loadFood(g);
-    this.loadGold(g);
-    this.loadPopulation(g);
+  resourceContainerAssets(container: Pixi.Container) {
+    this.foodAssets(container);
+    this.goldAssets(container);
+    this.populationAssets(container);
   }
 
-  loadFood(g: Game) {
+  private foodAssets(container: Pixi.Container) {
     const asset = Pixi.Sprite.from(
       require("./images/garlic.png")
     );
 
-    asset.x = g.app.screen.width - 130;
+    asset.x = 0
     asset.y = 0;
     asset.height = 25;
     asset.width = 25;
-    g.app.stage.addChild(asset);
+    container.addChild(asset);
   }
 
-  loadGold(g: Game) {
+  private goldAssets(container: Pixi.Container) {
     const asset = Pixi.Sprite.from(
       require("./images/gold.png")
     );
 
-    asset.x = g.app.screen.width - 130;
+    asset.x = 0
     asset.y = 30;
     asset.height = 25;
     asset.width = 25;
-    g.app.stage.addChild(asset);
+    container.addChild(asset);
   }
 
-  loadPopulation(g: Game) {
+  private populationAssets(container: Pixi.Container) {
     const asset = Pixi.Sprite.from(
       require("./images/peasant.png")
     );
 
-    asset.x = g.app.screen.width - 130;
+    asset.x = 0
     asset.y = 60;
     asset.height = 25;
     asset.width = 25;
-    g.app.stage.addChild(asset);
+    container.addChild(asset);
   }
 }
