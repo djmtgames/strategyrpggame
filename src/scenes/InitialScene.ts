@@ -3,11 +3,17 @@ import MenuScene from "./MenuScene";
 import Scene from "./Scene";
 import { Game } from "../Game";
 
+/*
 export default class InitialScene extends Scene {
   testText: Pixi.Text;
   info: Pixi.Text;
   tick: number;
   graphics: Pixi.Graphics;
+
+  constructor() {
+    super
+    tick = 0;
+  }
 
   create(g: Game) {
     g.state.register("tick", 0);
@@ -65,3 +71,5 @@ export default class InitialScene extends Scene {
     }
   }
 }
+
+*/
