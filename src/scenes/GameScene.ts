@@ -1,6 +1,7 @@
 import Scene from "./Scene";
 import * as PIXI from "pixi.js";
 import { Game } from "../Game";
+import GameSceneAssets from "../assets/GameSceneAssets";
 import AttackEvent from "../events/AttackEvent";
 
 interface Resource {
@@ -103,6 +104,8 @@ export default class GameScene extends Scene {
   eventQueue: PIXI.Text;
 
   create(g: Game) {
+    new GameSceneAssets(g);
+
     this.resources = { Food, Population, Happiness, Gold };
     this.decisions = baseDecisions;
     this.choices = [];
@@ -270,12 +273,12 @@ export default class GameScene extends Scene {
       fontFamily: "Courier",
       fontWeight: "Bold",
     });
-    this.goldResource.y = 25;
+    this.goldResource.y = 30;
     this.populationResource = new PIXI.Text("XXX POPL", {
       fontFamily: "Courier",
       fontWeight: "Bold",
     });
-    this.populationResource.y = 50;
+    this.populationResource.y = 60;
 
     this.foodResource = new PIXI.Text("XXX FOOD", {
       fontFamily: "Courier",
@@ -314,8 +317,8 @@ export default class GameScene extends Scene {
     this.goldResource.text = `${this.resources["Gold"].value} ${this.resources["Gold"].name}`;
     this.populationResource.text = `${this.resources["Population"].value} ${this.resources["Population"].name}`;
     this.turnDisplay.text = `Turn ${this.turnNumber}`;
-
     this.eventQueue.text = "";
+    
     g.events
       .all()
       .reverse()
