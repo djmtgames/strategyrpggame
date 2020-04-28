@@ -1,5 +1,8 @@
 import * as PIXI from "pixi.js";
 import { Game } from "../Game";
+import { Renderable } from "../core/Components";
+import { NOOP } from "../utils/Utils";
+
 export interface ButtonConfig {
   width: number | "__auto";
   height: number;
@@ -10,9 +13,9 @@ export interface ButtonConfig {
   click: (_: Button) => void;
 }
 
-export class Button {
+export class Button implements Renderable {
   static AUTO: "__auto" = "__auto";
-  pixi: PIXI.Text;
+  private pixi: PIXI.Text;
   private x: number = 0;
   private y: number = 0;
   private isMouseOver = false;
@@ -39,6 +42,10 @@ export class Button {
     this.isActive = config.isActive;
   }
 
+  getPixi(): PIXI.Text {
+    return this.pixi;
+  }
+
   addToStage(g: Game): void {
     g.app.stage.addChild(this.pixi);
   }
@@ -61,6 +68,11 @@ export class Button {
     return this;
   }
 
+  setStyle(styles: PIXI.TextStyle): this {
+    this.pixi.style = styles;
+    return this;
+  }
+
   onClick(fn: (_: Button) => void): this {
     this.pixi.on("pointerup", () => {
       this.isMouseDown = false;
@@ -73,3 +85,13 @@ export class Button {
     this.isActive(this);
   }
 }
+
+export const BlankButton = new Button({
+  width: Button.AUTO,
+  height: 0,
+  text: "UNIMPLEMENTED",
+  isActive: NOOP,
+  mouseout: NOOP,
+  mouseover: NOOP,
+  click: NOOP,
+});

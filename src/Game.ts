@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import Scene from "./scenes/Scene";
-import Keys from "./Keys";
-import Mouse from "./Mouse";
+import Keys from "./core/inputs/Keys";
+import Mouse from "./core/inputs/Mouse";
 import StateManager from "./StateManager";
 import EventQueue from "./events/EventQueue";
 
@@ -13,7 +13,7 @@ export interface Config {
 
 export class Game {
   app: PIXI.Application;
-  previousScene: Scene;
+  previousScene?: Scene;
   activeScene: Scene;
   keys: Keys;
   mouse: Mouse;

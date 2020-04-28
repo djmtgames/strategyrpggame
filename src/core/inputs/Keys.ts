@@ -1,4 +1,4 @@
-import SizedArray from "./utils/SizedArray";
+import SizedArray from "../../utils/SizedArray";
 
 export default class Keys {
   down: { [x: string]: boolean };
