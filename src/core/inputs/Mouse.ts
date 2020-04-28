@@ -1,5 +1,4 @@
-import SizedArray from "./utils/SizedArray";
-import { Point } from "pixi.js";
+import SizedArray from "../../utils/SizedArray";
 
 interface Point {
   x: number;
@@ -18,7 +17,6 @@ export default class Mouse {
     pos: Point;
     buttons: { left: boolean; middle: boolean; right: boolean };
   };
-  h;
   history: {
     clicks: SizedArray<{ pos: Point; button: MouseButton }>;
     pos: SizedArray<Point>;

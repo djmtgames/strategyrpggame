@@ -1,12 +1,15 @@
 import Scene from "./Scene";
-import * as PIXI from "pixi.js";
 import { Game } from "../Game";
 import GameSceneAssets from "../assets/GameSceneAssets";
 import AttackEvent from "../events/AttackEvent";
 import SizedSet from "../utils/SizedSet";
-import { Button } from "../components/Button";
-import ScrollBox from "../components/ScrollBox";
+import { Button, BlankButton } from "../ui/Button";
+import ScrollBox from "../ui/ScrollBox";
 import GameErrorEvent from "../events/GameErrorEvent";
+import { NOOP } from "../utils/Utils";
+import Container from "../ui/Container";
+import Label from "../ui/Label";
+import Style from "../ui/Style";
 
 interface Resource {
   name: string;
@@ -17,17 +20,6 @@ interface Decision {
   name: string;
   value: number;
 }
-
-const NOOP = () => undefined;
-const defaultButton = new Button({
-  width: 0,
-  height: 0,
-  text: "-",
-  mouseover: NOOP,
-  mouseout: NOOP,
-  click: NOOP,
-  isActive: NOOP,
-});
 
 const FoodConsumptionRate: number = 10;
 const PopulationGrowthRate: number = 0.2;
@@ -61,13 +53,13 @@ const Gold = {
 };
 
 const choiceStyles = {
-  default: new PIXI.TextStyle({ fill: "black" }),
-  hover: new PIXI.TextStyle({ fill: "white" }),
-  selected: new PIXI.TextStyle({ fill: "yellow" }),
-  selectedHovered: new PIXI.TextStyle({ fill: "red" }),
+  default: Style.from({ fill: "black" }),
+  hover: Style.from({ fill: "white" }),
+  selected: Style.from({ fill: "yellow" }),
+  selectedHovered: Style.from({ fill: "red" }),
 };
 
-const resourceTextStyles = new PIXI.TextStyle({
+const resourceTextStyles = Style.from({
   fontFamily: "Courier",
   fontWeight: "Bold",
 });
@@ -105,46 +97,34 @@ export default class GameScene extends Scene {
       - Map interface.
       - Details for city/fief/township/etc/etc/etc
     */
-  resources: { [x: string]: Resource };
-  decisions: { label: Button; decision: Decision }[];
-  foodPurchase: PIXI.Text = new PIXI.Text("");
-  purchaseContainer: PIXI.Container = new PIXI.Container();
-  resourceContainer: PIXI.Container = new PIXI.Container();
-  buildingsContainer: PIXI.Container = new PIXI.Container();
-  foodResource: PIXI.Text = new PIXI.Text("");
-  goldResource: PIXI.Text = new PIXI.Text("");
-  turnDisplay: PIXI.Text = new PIXI.Text("");
-  populationResource: PIXI.Text = new PIXI.Text("");
-  decisionContainer: PIXI.Container = new PIXI.Container();
-  choices: Button[];
-  selectedChoices: SizedSet<number>;
-  endTurnButton: any;
-  turnNumber: number;
+  resources: { [x: string]: Resource } = {};
+  decisions: { label: Button; decision: Decision }[] = [];
+  purchaseContainer: Container = new Container();
+  decisionContainer: Container = new Container();
+  resourceContainer: Container = new Container();
+  buildingsContainer: Container = new Container();
+  foodResource: Label = new Label();
+  goldResource: Label = new Label();
+  turnDisplay: Label = new Label();
+  populationResource: Label = new Label();
+  choices: Button[] = [];
+  selectedChoices: SizedSet<number> = new SizedSet(2);
   eventQueue: ScrollBox = new ScrollBox({ onUpdate: NOOP });
   gameSceneAssets: GameSceneAssets = new GameSceneAssets();
-
-  constructor() {
-    super();
-    this.resources = {};
-    this.decisions = [];
-    this.choices = [];
-    this.selectedChoices = new SizedSet(2);
-    this.turnNumber = 0;
-  }
+  endTurnButton: any;
+  foodPurchase: Button = BlankButton;
+  turnNumber: number = 0;
 
   create(g: Game) {
     this.resources = { Food, Population, Happiness, Gold };
     this.decisions = baseDecisions.map((x) => ({
-      label: defaultButton,
+      label: BlankButton,
       decision: x,
     }));
     this.choices = [];
     this.turnNumber = 1;
     this.gameSceneAssets = new GameSceneAssets();
     this.selectedChoices = new SizedSet(2);
-    this.purchaseContainer = new PIXI.Container();
-    this.resourceContainer = new PIXI.Container();
-    this.decisionContainer = new PIXI.Container();
     this.eventQueue = new ScrollBox({ onUpdate: NOOP });
     this.endTurnButton = new Button({
       text: "End Turn",
@@ -152,11 +132,11 @@ export default class GameScene extends Scene {
       height: 25,
       isActive: (b) => {
         if (b.mouseOver() && b.mouseDown()) {
-          b.pixi.style = choiceStyles.selectedHovered;
+          b.setStyle(choiceStyles.selectedHovered);
         } else if (b.mouseOver()) {
-          b.pixi.style = choiceStyles.hover;
+          b.setStyle(choiceStyles.hover);
         } else {
-          b.pixi.style = choiceStyles.default;
+          b.setStyle(choiceStyles.default);
         }
       },
       mouseover: NOOP,
@@ -169,18 +149,18 @@ export default class GameScene extends Scene {
     this.setDecisionContainer();
     this.setEndTurnButton(g);
 
-    g.app.stage.addChild(this.purchaseContainer);
-    g.app.stage.addChild(this.resourceContainer);
-    g.app.stage.addChild(this.decisionContainer);
+    this.purchaseContainer.addToStage(g);
+    this.decisionContainer.addToStage(g);
+    this.resourceContainer.addToStage(g);
     this.endTurnButton.addToStage(g);
     this.eventQueue.addToStage(g);
   }
 
   update(g: Game) {
-    this.foodResource.text = `${this.resources["Food"].value}`;
-    this.goldResource.text = `${this.resources["Gold"].value}`;
-    this.populationResource.text = `${this.resources["Population"].value}`;
-    this.turnDisplay.text = `Turn ${this.turnNumber}`;
+    this.foodResource.setText(`${this.resources["Food"].value}`);
+    this.goldResource.setText(`${this.resources["Gold"].value}`);
+    this.populationResource.setText(`${this.resources["Population"].value}`);
+    this.turnDisplay.setText(`Turn ${this.turnNumber}`);
     this.eventQueue.messages = g.events.all().map((x) => x.display());
     this.eventQueue.update();
     this.endTurnButton.update();
@@ -188,48 +168,55 @@ export default class GameScene extends Scene {
   }
 
   private setPurchaseContainer() {
-    this.foodPurchase = new PIXI.Text("Purchase 20 food for 5G");
-    this.foodPurchase.interactive = true;
-    this.foodPurchase.buttonMode = true;
-    this.foodPurchase.on("pointerup", () => {
-      if (this.resources["Gold"].value < 20) {
-        return;
-      }
-      this.resources["Food"].value += 20;
-      this.resources["Gold"].value -= 5;
+    this.foodPurchase = new Button({
+      width: 0,
+      height: 0,
+      text: "Purchase 20 food for 5G",
+      isActive: NOOP,
+      mouseout: NOOP,
+      mouseover: NOOP,
+      click: () => {
+        if (this.resources["Gold"].value < 20) {
+          return;
+        }
+        this.resources["Food"].value += 20;
+        this.resources["Gold"].value -= 5;
+      },
     });
-
-    this.purchaseContainer.addChild(this.foodPurchase);
+    this.purchaseContainer.add(this.foodPurchase);
   }
 
   private setResourceContainer() {
-    this.resourceContainer.x = 650;
+    this.resourceContainer.setX(650);
 
-    this.foodResource = new PIXI.Text("XXX FOOD", resourceTextStyles);
-    this.foodResource.x = 30;
-    this.foodResource.y = 0;
+    this.foodResource = Label.from("XXX FOOD")
+      .setStyle(resourceTextStyles)
+      .setX(30);
 
-    this.goldResource = new PIXI.Text("XXX GOLD", resourceTextStyles);
-    this.goldResource.x = 30;
-    this.goldResource.y = 30;
+    this.goldResource = Label.from("XXX GOLD")
+      .setStyle(resourceTextStyles)
+      .setX(30)
+      .setY(30);
 
-    this.populationResource = new PIXI.Text("XXX POPL", resourceTextStyles);
-    this.populationResource.x = 30;
-    this.populationResource.y = 60;
+    this.populationResource = Label.from("XXX POPL")
+      .setStyle(resourceTextStyles)
+      .setX(30)
+      .setY(60);
 
-    this.turnDisplay = new PIXI.Text("XXX TURN", resourceTextStyles);
-    this.turnDisplay.y = 100;
+    this.turnDisplay = Label.from("XXX TURN")
+      .setStyle(resourceTextStyles)
+      .setX(30)
+      .setY(100);
 
     this.gameSceneAssets.resourceContainerAssets(this.resourceContainer);
-    this.resourceContainer.addChild(this.foodResource);
-    this.resourceContainer.addChild(this.goldResource);
-    this.resourceContainer.addChild(this.populationResource);
-    this.resourceContainer.addChild(this.turnDisplay);
+    this.resourceContainer.add(this.foodResource);
+    this.resourceContainer.add(this.goldResource);
+    this.resourceContainer.add(this.populationResource);
+    this.resourceContainer.add(this.turnDisplay);
   }
 
   private setDecisionContainer() {
-    this.decisionContainer.x = 200;
-    this.decisionContainer.y = 300;
+    this.decisionContainer.setX(200).setY(300);
     this.decisions.map(({ label, decision }, idx) => {
       let currentOption: Button;
       currentOption = new Button({
@@ -239,15 +226,15 @@ export default class GameScene extends Scene {
         isActive: (b) => {
           if (this.selectedChoices.contains(decision.value)) {
             if (b.mouseOver()) {
-              b.pixi.style = choiceStyles.selectedHovered;
+              b.setStyle(choiceStyles.selectedHovered);
             } else {
-              b.pixi.style = choiceStyles.selected;
+              b.setStyle(choiceStyles.selected);
             }
           } else {
             if (b.mouseOver()) {
-              b.pixi.style = choiceStyles.hover;
+              b.setStyle(choiceStyles.hover);
             } else {
-              b.pixi.style = choiceStyles.default;
+              b.setStyle(choiceStyles.default);
             }
           }
         },
@@ -258,7 +245,7 @@ export default class GameScene extends Scene {
         },
       });
       currentOption.setY(25 * idx);
-      this.decisionContainer.addChild(currentOption.pixi);
+      this.decisionContainer.add(currentOption);
       this.choices.push(currentOption);
       return { currentOption, decision };
     });
