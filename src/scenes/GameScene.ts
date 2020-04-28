@@ -168,6 +168,7 @@ export default class GameScene extends Scene {
     this.turnDisplay.text = `Turn ${this.turnNumber}`;
     this.eventQueue.messages = g.events.all().map((x) => x.display());
     this.eventQueue.update();
+    this.choices.map((b) => b.update());
   }
 
   private setPurchaseContainer() {
@@ -234,29 +235,10 @@ export default class GameScene extends Scene {
             }
           }
         },
-        mouseout: (b) => {
-          if (this.selectedChoices.contains(decision.value)) {
-            b.pixi.style = choiceStyles.selected;
-          } else {
-            b.pixi.style = choiceStyles.default;
-          }
-        },
-        mouseover: (b) => {
-          b.pixi.style = choiceStyles.hover;
-        },
+        mouseout: NOOP,
+        mouseover: NOOP,
         click: (b) => {
           this.selectedChoices.push(decision.value);
-          this.decisions.forEach(({ decision }) => {
-            if (this.selectedChoices.contains(decision.value)) {
-              b.pixi.style = choiceStyles.selected;
-            } else {
-              if (b.mouseOver()) {
-                b.pixi.style = choiceStyles.hover;
-              } else {
-                b.pixi.style = choiceStyles.default;
-              }
-            }
-          });
         },
       });
       currentOption.setY(25 * idx);
