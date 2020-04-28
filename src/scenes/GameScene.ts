@@ -147,12 +147,12 @@ export default class GameScene extends Scene {
       click: NOOP,
     });
 
+    this.setMapAssetContainer(g);
     this.setPurchaseContainer();
     this.setResourceContainer();
     this.setDecisionContainer();
     this.setEndTurnButton(g);
 
-    // g.app.stage.addChild(this.mapAsset.mapContainer);
     this.mapAssetContainer.addToStage(g);
     this.purchaseContainer.addToStage(g);
     this.decisionContainer.addToStage(g);
@@ -172,9 +172,9 @@ export default class GameScene extends Scene {
     this.choices.map((b) => b.update());
   }
 
-  private setMapAssetContainer() {
+  private setMapAssetContainer(g: Game) {
     this.mapAsset = new MapAsset(g.app);
-    this.mapAssetContainer.add(this.mapAsset)
+    this.mapAssetContainer.add(this.mapAsset);
   }
 
   private setPurchaseContainer() {

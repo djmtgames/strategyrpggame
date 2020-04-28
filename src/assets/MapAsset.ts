@@ -1,28 +1,29 @@
 import * as PIXI from "pixi.js";
+import { Game } from "../Game";
 import { Renderable } from "../core/Components";
 import Map from "./maps/medieval-map.png";
 
 export class MapAsset implements Renderable {
-  app: PIXI.Application;
-  mapContainer: PIXI.Container;
-  bgMap: PIXI.Sprite;
-  distanceX: number;
-  distanceY: number;
+  private app: PIXI.Application;
+  private moveDistanceX: number;
+  private moveDistanceY: number;
+  private pixi: PIXI.Sprite;
+  private _y: number = 0;
+  private _x: number = 0;
+  private _scale_y: number = 0;
+  private _scale_x: number = 0;
 
   constructor(app: PIXI.Application) {
-    this.app = app
-    this.mapContainer = new PIXI.Container()
-    this.bgMap = PIXI.Sprite.from(Map);
-    this.bgMap.scale.x = 0.5;
-    this.bgMap.scale.y = 0.5;
-    
-    // Starting Location
-    this.bgMap.x = -475;
-    this.bgMap.y = -350;
+    this.app = app;
+    this.pixi = PIXI.Sprite.from(Map);
 
-    // Movement Interval
-    this.distanceX = this.app?.view.width / 2;
-    this.distanceY = this.app?.view.width / 2;
+    this.setScaleY(0.5)
+        .setScaleX(0.5)
+        .setY(-350)
+        .setX(-475);
+
+    this.moveDistanceX = this.app?.view.width / 2;
+    this.moveDistanceY = this.app?.view.height / 2;
 
     document.addEventListener("keydown", (key: { keyCode: number }): void => {
       switch (key.keyCode) {
@@ -42,41 +43,79 @@ export class MapAsset implements Renderable {
           return;
       }
     });
+  }
 
-    this.mapContainer.addChild(this.bgMap)
+  private setScaleY(n: number): this {
+    this._scale_y = n;
+    this.pixi.scale.y = n;
+    return this;
+  }
+
+  private setScaleX(n: number): this {
+    this._scale_x = n;
+    this.pixi.scale.x = n;
+    return this;
+  }
+
+  private setY(n: number): this {
+    this._y = n;
+    this.pixi.y = n;
+    return this;
+  }
+
+  private get y(): number {
+    return this._y;
+  }
+
+  private setX(n: number): this {
+    this._x = n;
+    this.pixi.x = n;
+    return this;
+  }
+
+  private get x(): number {
+    return this._x;
+  }
+  
+  getPixi(): PIXI.Sprite {
+    return this.pixi;
+  }
+
+  addToStage(g: Game): void {
+    g.app.stage.addChild(this.pixi);
   }
 
   private moveUp(): void {
-    if (this.bgMap.position.y + this.distanceY >= 0) {
-      this.bgMap.position.y = 0;
+    if (this.y + this.moveDistanceY >= 0) {
+      this.setY(0);
     } else {
-      this.bgMap.position.y += this.distanceY;
+      this.setY(this.y + this.moveDistanceY);
     }
   }
 
   private moveDown(): void {
-    if (this.bgMap.position.y + this.distanceY <= 0) {
-      this.bgMap.position.y = -this.app.view.height;
+    if (this.y + this.moveDistanceY <= 0) {
+      this.setY(-this.app.view.height);
     } else {
-      this.bgMap.position.y -= this.distanceY;
+      this.setY(this.y - this.moveDistanceY);
     }
   }
 
   private moveLeft(): void {
-    if (this.bgMap.position.x + this.distanceX >= 0) {
-      this.bgMap.position.x = 0;
+    if (this.x + this.moveDistanceX >= 0) {
+      this.setX(0);
     } else {
-      this.bgMap.position.x += this.distanceX;
+      this.setX(this.x + this.moveDistanceX);
     }
   }
 
   private moveRight(): void {
-    if (this.bgMap.position.x + this.distanceX <= 0) {
-      this.bgMap.position.x = -this.app?.view.width;
+    if (this.x + this.moveDistanceX <= 0) {
+      this.setX(-this.app?.view.width);
     } else {
-      this.bgMap.position.x -= this.distanceX;
+      this.setX(this.x - this.moveDistanceX);
     }
   }
 }
 
-export const BlankMapAsset = new MapAsset(new PIXI.Application);
+export const BlankMapAsset = new MapAsset(new PIXI.Application());
