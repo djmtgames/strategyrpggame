@@ -1,22 +1,28 @@
-import * as Pixi from "pixi.js";
+import * as PIXI from "pixi.js";
 import MenuScene from "./MenuScene";
 import Scene from "./Scene";
 import { Game } from "../Game";
 
+/*
 export default class InitialScene extends Scene {
-  testText: Pixi.Text;
-  info: Pixi.Text;
+  testText: PIXI.Text;
+  info: PIXI.Text;
   tick: number;
-  graphics: Pixi.Graphics;
+  graphics: PIXI.Graphics;
+
+  constructor() {
+    super
+    tick = 0;
+  }
 
   create(g: Game) {
     g.state.register("tick", 0);
 
-    this.info = new Pixi.Text("");
+    this.info = new PIXI.Text("");
     this.info.x = 100;
     this.info.y = 100;
 
-    this.testText = new Pixi.Text("Press Enter");
+    this.testText = new PIXI.Text("Press Enter");
     this.testText.x = 300;
     this.testText.y = 400;
     this.testText.interactive = true;
@@ -33,7 +39,7 @@ export default class InitialScene extends Scene {
       this.graphics.endFill();
     });
 
-    this.graphics = new Pixi.Graphics();
+    this.graphics = new PIXI.Graphics();
 
     g.app.stage.addChild(this.info);
     g.app.stage.addChild(this.testText);
@@ -65,3 +71,5 @@ export default class InitialScene extends Scene {
     }
   }
 }
+
+*/

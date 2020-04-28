@@ -1,7 +1,7 @@
 import GameEvent from "./GameEvent";
 
-export default class AttackEvent extends GameEvent {
-  name: "AttackEvent" = "AttackEvent";
+export default class GameErrorEvent extends GameEvent {
+  name: "ErrorEvent" = "ErrorEvent";
   private msg: string;
   constructor(msg: string) {
     super();

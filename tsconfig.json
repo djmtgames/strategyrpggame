@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
     "noImplicitAny": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "alwaysStrict": true,
+    "strict": true,
+    "lib": ["dom", "esnext"],
+    "target": "es6",
+    "moduleResolution": "node",
+    "traceResolution": true
   },
-  "lib": ["dom", "es2018"],
-  "target": "es6",
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

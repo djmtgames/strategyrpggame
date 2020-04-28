@@ -3,6 +3,10 @@ import * as PIXI from "pixi.js";
 import { Game } from "../Game";
 import GameSceneAssets from "../assets/GameSceneAssets";
 import AttackEvent from "../events/AttackEvent";
+import SizedSet from "../utils/SizedSet";
+import { Button } from "../components/Button";
+import ScrollBox from "../components/ScrollBox";
+import GameErrorEvent from "../events/GameErrorEvent";
 
 interface Resource {
   name: string;
@@ -14,10 +18,21 @@ interface Decision {
   value: number;
 }
 
+const NOOP = () => undefined;
+const defaultButton = new Button({
+  width: 0,
+  height: 0,
+  text: "-",
+  mouseover: NOOP,
+  mouseout: NOOP,
+  click: NOOP,
+  isActive: NOOP,
+});
+
 const FoodConsumptionRate: number = 10;
 const PopulationGrowthRate: number = 0.2;
 const PopulationDeathRate: number = 0.1;
-const BaseFoodProductionRange: number[] = [8, 12];
+const BaseFoodProductionRange: [number, number] = [8, 12];
 const BaseTaxRate: number = 1;
 
 const Peasants = {
@@ -45,18 +60,17 @@ const Gold = {
   value: 100,
 };
 
-const selectedChoiceStyle = new PIXI.TextStyle({
-  fill: "yellow",
-});
-
-const defaultChoiceStyle = new PIXI.TextStyle({
-  fill: "black",
-});
+const choiceStyles = {
+  default: new PIXI.TextStyle({ fill: "black" }),
+  hover: new PIXI.TextStyle({ fill: "white" }),
+  selected: new PIXI.TextStyle({ fill: "yellow" }),
+  selectedHovered: new PIXI.TextStyle({ fill: "red" }),
+};
 
 const resourceTextStyles = new PIXI.TextStyle({
   fontFamily: "Courier",
   fontWeight: "Bold",
-})
+});
 
 // These should be a class or something more complex since a lot of the logic then has to be implemented in the GameScene instead of somewhere else.
 let baseDecisions: Decision[] = [
@@ -92,46 +106,74 @@ export default class GameScene extends Scene {
       - Details for city/fief/township/etc/etc/etc
     */
   resources: { [x: string]: Resource };
-  decisions: Decision[];
-  foodPurchase: PIXI.Text;
-  purchaseContainer: PIXI.Container;
-  resourceContainer: PIXI.Container;
-  buildingsContainer: PIXI.Container;
-  foodResource: PIXI.Text;
-  goldResource: PIXI.Text;
-  turnDisplay: PIXI.Text;
-  populationResource: PIXI.Text;
-  decisionContainer: PIXI.Container;
-  choices: PIXI.Text[];
-  selectedChoices: number[];
+  decisions: { label: Button; decision: Decision }[];
+  foodPurchase: PIXI.Text = new PIXI.Text("");
+  purchaseContainer: PIXI.Container = new PIXI.Container();
+  resourceContainer: PIXI.Container = new PIXI.Container();
+  buildingsContainer: PIXI.Container = new PIXI.Container();
+  foodResource: PIXI.Text = new PIXI.Text("");
+  goldResource: PIXI.Text = new PIXI.Text("");
+  turnDisplay: PIXI.Text = new PIXI.Text("");
+  populationResource: PIXI.Text = new PIXI.Text("");
+  decisionContainer: PIXI.Container = new PIXI.Container();
+  choices: Button[];
+  selectedChoices: SizedSet<number>;
   endTurnButton: any;
   turnNumber: number;
-  eventQueue: PIXI.Text;
+  eventQueue: ScrollBox = new ScrollBox({ onUpdate: NOOP });
+  gameSceneAssets: GameSceneAssets = new GameSceneAssets();
+
+  constructor() {
+    super();
+    this.resources = {};
+    this.decisions = [];
+    this.choices = [];
+    this.selectedChoices = new SizedSet(2);
+    this.turnNumber = 0;
+  }
 
   create(g: Game) {
     this.resources = { Food, Population, Happiness, Gold };
-    this.decisions = baseDecisions;
+    this.decisions = baseDecisions.map((x) => ({
+      label: defaultButton,
+      decision: x,
+    }));
     this.choices = [];
     this.turnNumber = 1;
-    this.selectedChoices = [];
-    this.gameSceneAssets = new GameSceneAssets()
+    this.gameSceneAssets = new GameSceneAssets();
+    this.selectedChoices = new SizedSet(2);
     this.purchaseContainer = new PIXI.Container();
     this.resourceContainer = new PIXI.Container();
     this.decisionContainer = new PIXI.Container();
-    this.eventQueue = new PIXI.Text("---");
-    this.endTurnButton = new PIXI.Text("End Turn");
+    this.eventQueue = new ScrollBox({ onUpdate: NOOP });
+    this.endTurnButton = new Button({
+      text: "End Turn",
+      width: Button.AUTO,
+      height: 25,
+      isActive: (b) => {
+        if (b.mouseOver() && b.mouseDown()) {
+          b.pixi.style = choiceStyles.selectedHovered;
+        } else if (b.mouseOver()) {
+          b.pixi.style = choiceStyles.hover;
+        } else {
+          b.pixi.style = choiceStyles.default;
+        }
+      },
+      mouseover: NOOP,
+      mouseout: NOOP,
+      click: NOOP,
+    });
 
-    this.setPurchaseContainer()
-    this.setResourceContainer()
-    this.setDecisionContainer()
-    this.setEndTurnButton(g)
-    this.setEventQueue()
+    this.setPurchaseContainer();
+    this.setResourceContainer();
+    this.setDecisionContainer();
+    this.setEndTurnButton(g);
 
     g.app.stage.addChild(this.purchaseContainer);
     g.app.stage.addChild(this.resourceContainer);
     g.app.stage.addChild(this.decisionContainer);
-    g.app.stage.addChild(this.endTurnButton);
-    g.app.stage.addChild(this.eventQueue);
+    this.endTurnButton.addToStage(g);
+    this.eventQueue.addToStage(g);
   }
 
   update(g: Game) {
@@ -139,14 +181,10 @@ export default class GameScene extends Scene {
     this.goldResource.text = `${this.resources["Gold"].value}`;
     this.populationResource.text = `${this.resources["Population"].value}`;
     this.turnDisplay.text = `Turn ${this.turnNumber}`;
-    this.eventQueue.text = "";
-
-    g.events
-      .all()
-      .reverse()
-      .forEach((e) => {
-        this.eventQueue.text += e.display() + "\n";
-      });
+    this.eventQueue.messages = g.events.all().map((x) => x.display());
+    this.eventQueue.update();
+    this.endTurnButton.update();
+    this.choices.map((b) => b.update());
   }
 
   private setPurchaseContainer() {
@@ -192,98 +230,87 @@ export default class GameScene extends Scene {
   private setDecisionContainer() {
     this.decisionContainer.x = 200;
     this.decisionContainer.y = 300;
-
-    // Create a button for each possible decision available.
-    this.decisions.forEach((decision) => {
-      let currentOption: PIXI.Text;
-      currentOption = new PIXI.Text(decision.name);
-      currentOption.interactive = true;
-      currentOption.buttonMode = true;
-
-      currentOption.on("pointerup", () => {
-        const choiceNumber: number = decision.value;
-        const selectedChoiceIndex: number = this.selectedChoices.indexOf(choiceNumber)
-
-        if (selectedChoiceIndex === -1) {
-          // Add choice
-          this.selectedChoices.unshift(choiceNumber);
-        } else {
-          // Remove choice
-          this.selectedChoices.splice(selectedChoiceIndex, 1);
-        }
-
-        // Can't limit arrays in JS so we need to check the length and pop off the last one and push to the front with the new option.
-        if (this.selectedChoices.length > 2) {
-          this.selectedChoices.pop();
-        }
-
-        // Iterate through all choices and highlight only selectedChoices
-        this.choices.forEach((choice, index) => {
-          if (this.selectedChoices.indexOf(index) === -1) {
-            // Choice not selected
-            choice.style = defaultChoiceStyle;
+    this.decisions.map(({ label, decision }, idx) => {
+      let currentOption: Button;
+      currentOption = new Button({
+        text: decision.name,
+        width: 100,
+        height: 50,
+        isActive: (b) => {
+          if (this.selectedChoices.contains(decision.value)) {
+            if (b.mouseOver()) {
+              b.pixi.style = choiceStyles.selectedHovered;
+            } else {
+              b.pixi.style = choiceStyles.selected;
+            }
           } else {
-            // Choice selected
-            choice.style = selectedChoiceStyle;
+            if (b.mouseOver()) {
+              b.pixi.style = choiceStyles.hover;
+            } else {
+              b.pixi.style = choiceStyles.default;
+            }
           }
-        });
+        },
+        mouseout: NOOP,
+        mouseover: NOOP,
+        click: (b) => {
+          this.selectedChoices.push(decision.value);
+        },
       });
-
+      currentOption.setY(25 * idx);
+      this.decisionContainer.addChild(currentOption.pixi);
       this.choices.push(currentOption);
-    });
-
-    this.choices.forEach((choice, index) => {
-      choice.y += 30 * index;
-      this.decisionContainer.addChild(choice);
+      return { currentOption, decision };
     });
   }
 
   private setEndTurnButton(g: Game) {
-    this.endTurnButton.x = 325;
-    this.endTurnButton.y = 500;
-    this.endTurnButton.interactive = true;
-    this.endTurnButton.buttonMode = true;
+    this.endTurnButton.setX(325).setY(500);
 
-    function randomIntFromInterval(minMax: number[]) {
+    function randomIntFromInterval(minMax: [number, number]) {
       return Math.floor(
         Math.random() * (minMax[1] - minMax[0] + 1) + minMax[0]
       );
     }
 
-    this.endTurnButton.on("pointerup", () => {
+    this.endTurnButton.onClick(() => {
       // Process End of Turn
       // -- Add any bonuses
       // -- Add any "end-of-turn" effects
       // -- Add any penalties
       // --- Generate Beginning of Turn Event\
       // Check to ensure you have chosen your 2 actions.
-      if (this.selectedChoices.length === 2) {
-        this.selectedChoices.forEach((choice) => {
-          switch (choice) {
-            case 0:
-              this.resources["Gold"].value += Math.floor(
-                this.resources["Population"].value * BaseTaxRate
-              );
-              break;
-            case 1:
+      if (this.selectedChoices.length() === 2) {
+        this.selectedChoices.forEach({
+          fn: (choice) => {
+            switch (choice) {
+              case 0:
+                this.resources["Gold"].value += Math.floor(
+                  this.resources["Population"].value * BaseTaxRate
+                );
+                break;
+              case 1:
+                // code block
+                break;
+              case 3:
+                // code block
+                break;
+              case 4:
+                // code block
+                break;
+              case 5:
+                // code block
+                break;
+              default:
               // code block
-              break;
-            case 3:
-              // code block
-              break;
-            case 4:
-              // code block
-              break;
-            case 5:
-              // code block
-              break;
-            default:
-            // code block
-          }
+            }
+          },
         });
 
         // First, grow food based on current peasant population. Peasants produce a random amount in a range.
-        const foodAmount: number = randomIntFromInterval(BaseFoodProductionRange);
+        const foodAmount: number = randomIntFromInterval(
+          BaseFoodProductionRange
+        );
         console.log(
           "You grew " +
             this.resources["Population"].value * foodAmount +
@@ -294,13 +321,17 @@ export default class GameScene extends Scene {
         // --- Generate Beginning of Turn Event
         // -- Add an Event Log
         if (Math.random() > 0.8) {
-          const lostFood: number = Math.ceil(this.resources["Food"].value * 0.2);
-          const lostGold: number = Math.ceil(this.resources["Gold"].value * 0.2);
+          const lostFood: number = Math.ceil(
+            this.resources["Food"].value * 0.2
+          );
+          const lostGold: number = Math.ceil(
+            this.resources["Gold"].value * 0.2
+          );
           this.resources["Food"].value -= lostFood;
           this.resources["Gold"].value -= lostGold;
           g.events.add(
             new AttackEvent(
-              `You were attacked by bandits! You lost ${lostFood} food and ${lostGold} gold!`
+              `[Turn ${this.turnNumber}] You were attacked by bandits! You lost ${lostFood} food and ${lostGold} gold!`
             )
           );
         }
@@ -340,17 +371,12 @@ export default class GameScene extends Scene {
         }
 
         this.turnNumber++;
-        this.selectedChoices = [];
-        this.choices.forEach(choice => {
-          choice.style = defaultChoiceStyle;
-        });
+        this.selectedChoices.empty();
       } else {
-        alert("You must chose 2 actions to end your turn.");
+        g.events.add(
+          new GameErrorEvent("You must chose 2 actions to end your turn.")
+        );
       }
     });
-  }
-
-  private setEventQueue() {
-    this.eventQueue.y = 525;
   }
 }
