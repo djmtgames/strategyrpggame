@@ -372,7 +372,6 @@ export default class GameScene extends Scene {
 
         this.turnNumber++;
         this.selectedChoices.empty();
-        this.choices.forEach((x) => x.update());
       } else {
         g.events.add(
           new GameErrorEvent("You must chose 2 actions to end your turn.")
