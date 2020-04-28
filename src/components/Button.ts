@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import { Game } from "../Game";
-interface ButtonConfig {
-  width: number;
+export interface ButtonConfig {
+  width: number | "__auto";
   height: number;
   text: string;
   isActive: (_: Button) => void;
@@ -10,18 +10,23 @@ interface ButtonConfig {
   click: (_: Button) => void;
 }
 
-export default class Button {
+export class Button {
+  static AUTO: "__auto" = "__auto";
   pixi: PIXI.Text;
   private x: number = 0;
   private y: number = 0;
   private isMouseOver = false;
+  private isMouseDown: boolean = false;
   private isActive: (_: Button) => void;
 
   constructor(config: ButtonConfig) {
     this.pixi = new PIXI.Text(config.text);
     this.pixi.interactive = true;
     this.pixi.buttonMode = true;
-    this.pixi.on("pointerup", config.click.bind(this, this));
+    this.pixi.on("pointerup", () => {
+      config.click(this);
+      this.isMouseDown = false;
+    });
     this.pixi.on("pointerover", () => {
       this.isMouseOver = true;
       config.mouseover(this);
@@ -30,6 +35,7 @@ export default class Button {
       this.isMouseOver = false;
       config.mouseout(this);
     });
+    this.pixi.on("pointerdown", () => (this.isMouseDown = true));
     this.isActive = config.isActive;
   }
 
@@ -41,6 +47,10 @@ export default class Button {
     return this.isMouseOver;
   }
 
+  mouseDown(): boolean {
+    return this.isMouseDown;
+  }
+
   setY(n: number): this {
     this.pixi.y = n;
     return this;
@@ -48,6 +58,14 @@ export default class Button {
 
   setX(n: number): this {
     this.pixi.x = n;
+    return this;
+  }
+
+  onClick(fn: (_: Button) => void): this {
+    this.pixi.on("pointerup", () => {
+      this.isMouseDown = false;
+      fn(this);
+    });
     return this;
   }
 

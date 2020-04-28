@@ -4,8 +4,7 @@ import { Game } from "../Game";
 import GameSceneAssets from "../assets/GameSceneAssets";
 import AttackEvent from "../events/AttackEvent";
 import SizedSet from "../utils/SizedSet";
-import EventQueue from "../events/EventQueue";
-import Button from "../components/Button";
+import { Button } from "../components/Button";
 import ScrollBox from "../components/ScrollBox";
 import GameErrorEvent from "../events/GameErrorEvent";
 
@@ -33,7 +32,7 @@ const defaultButton = new Button({
 const FoodConsumptionRate: number = 10;
 const PopulationGrowthRate: number = 0.2;
 const PopulationDeathRate: number = 0.1;
-const BaseFoodProductionRange: number[] = [8, 12];
+const BaseFoodProductionRange: [number, number] = [8, 12];
 const BaseTaxRate: number = 1;
 
 const Peasants = {
@@ -147,7 +146,23 @@ export default class GameScene extends Scene {
     this.resourceContainer = new PIXI.Container();
     this.decisionContainer = new PIXI.Container();
     this.eventQueue = new ScrollBox({ onUpdate: NOOP });
-    this.endTurnButton = new PIXI.Text("End Turn");
+    this.endTurnButton = new Button({
+      text: "End Turn",
+      width: Button.AUTO,
+      height: 25,
+      isActive: (b) => {
+        if (b.mouseOver() && b.mouseDown()) {
+          b.pixi.style = choiceStyles.selectedHovered;
+        } else if (b.mouseOver()) {
+          b.pixi.style = choiceStyles.hover;
+        } else {
+          b.pixi.style = choiceStyles.default;
+        }
+      },
+      mouseover: NOOP,
+      mouseout: NOOP,
+      click: NOOP,
+    });
 
     this.setPurchaseContainer();
     this.setResourceContainer();
@@ -157,7 +172,7 @@ export default class GameScene extends Scene {
     g.app.stage.addChild(this.purchaseContainer);
     g.app.stage.addChild(this.resourceContainer);
     g.app.stage.addChild(this.decisionContainer);
-    g.app.stage.addChild(this.endTurnButton);
+    this.endTurnButton.addToStage(g);
     this.eventQueue.addToStage(g);
   }
 
@@ -168,6 +183,7 @@ export default class GameScene extends Scene {
     this.turnDisplay.text = `Turn ${this.turnNumber}`;
     this.eventQueue.messages = g.events.all().map((x) => x.display());
     this.eventQueue.update();
+    this.endTurnButton.update();
     this.choices.map((b) => b.update());
   }
 
@@ -249,18 +265,15 @@ export default class GameScene extends Scene {
   }
 
   private setEndTurnButton(g: Game) {
-    this.endTurnButton.x = 325;
-    this.endTurnButton.y = 500;
-    this.endTurnButton.interactive = true;
-    this.endTurnButton.buttonMode = true;
+    this.endTurnButton.setX(325).setY(500);
 
-    function randomIntFromInterval(minMax: number[]) {
+    function randomIntFromInterval(minMax: [number, number]) {
       return Math.floor(
         Math.random() * (minMax[1] - minMax[0] + 1) + minMax[0]
       );
     }
 
-    this.endTurnButton.on("pointerup", () => {
+    this.endTurnButton.onClick(() => {
       // Process End of Turn
       // -- Add any bonuses
       // -- Add any "end-of-turn" effects
