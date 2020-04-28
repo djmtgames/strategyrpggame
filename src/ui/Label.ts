@@ -1,11 +1,12 @@
-import * as PIXI from 'pixi.js';
-import { Game } from '../Game';
-import { Renderable } from '../core/Components';
-import Style from './Style';
+import * as PIXI from "pixi.js";
+import { Game } from "../Game";
+import { Renderable } from "../core/Components";
+import Style from "./Style";
+import { Positionable } from "../utils/Utils";
 
-export default class Label implements Renderable {
-  private pixi: PIXI.Text = new PIXI.Text('');
-  private text: string = '';
+class Label implements Renderable {
+  private pixi: PIXI.Text = new PIXI.Text("");
+  private text: string = "";
 
   static from(text: string): Label {
     return new Label().setText(text);
@@ -40,3 +41,5 @@ export default class Label implements Renderable {
     g.app.stage.addChild(this.pixi);
   }
 }
+
+export default Label;

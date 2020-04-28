@@ -2,7 +2,7 @@ export const NOOP = () => undefined;
 
 type Constructor<T = {}> = new (...args: any[]) => T;
 
-const Positionable = <TBase extends Constructor>(Base: TBase) => {
+export const Positionable = <TBase extends Constructor>(Base: TBase) => {
   return class extends Base {
     private _x: number = 0;
     private _y: number = 0;
