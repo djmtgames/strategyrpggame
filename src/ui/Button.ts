@@ -1,11 +1,11 @@
-import * as PIXI from 'pixi.js';
-import { Game } from '../Game';
-import { Renderable } from '../core/Components';
-import { NOOP } from '../utils/Utils';
-import Style from './Style';
+import * as PIXI from "pixi.js";
+import { Game } from "../Game";
+import { Renderable } from "../core/Components";
+import { NOOP } from "../utils/Utils";
+import Style from "./Style";
 
 export interface ButtonConfig {
-  width: number | '__auto';
+  width: number | "__auto";
   height: number;
   text: string;
   isActive: (_: Button) => void;
@@ -15,7 +15,7 @@ export interface ButtonConfig {
 }
 
 export class Button implements Renderable {
-  static AUTO: '__auto' = '__auto';
+  static AUTO: "__auto" = "__auto";
   private pixi: PIXI.Text;
   private x: number = 0;
   private y: number = 0;
@@ -27,19 +27,19 @@ export class Button implements Renderable {
     this.pixi = new PIXI.Text(config.text);
     this.pixi.interactive = true;
     this.pixi.buttonMode = true;
-    this.pixi.on('pointerup', () => {
+    this.pixi.on("pointerup", () => {
       config.click(this);
       this.isMouseDown = false;
     });
-    this.pixi.on('pointerover', () => {
+    this.pixi.on("pointerover", () => {
       this.isMouseOver = true;
       config.mouseover(this);
     });
-    this.pixi.on('pointerout', () => {
+    this.pixi.on("pointerout", () => {
       this.isMouseOver = false;
       config.mouseout(this);
     });
-    this.pixi.on('pointerdown', () => (this.isMouseDown = true));
+    this.pixi.on("pointerdown", () => (this.isMouseDown = true));
     this.isActive = config.isActive;
   }
 
@@ -75,7 +75,7 @@ export class Button implements Renderable {
   }
 
   onClick(fn: (_: Button) => void): this {
-    this.pixi.on('pointerup', () => {
+    this.pixi.on("pointerup", () => {
       this.isMouseDown = false;
       fn(this);
     });
@@ -90,7 +90,7 @@ export class Button implements Renderable {
 export const BlankButton = new Button({
   width: Button.AUTO,
   height: 0,
-  text: 'UNIMPLEMENTED',
+  text: "UNIMPLEMENTED",
   isActive: NOOP,
   mouseout: NOOP,
   mouseover: NOOP,

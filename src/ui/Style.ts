@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js';
+
 export default class Style {
   private pixi: PIXI.TextStyle = new PIXI.TextStyle();
 

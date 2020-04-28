@@ -1,6 +1,6 @@
-import { Renderable } from '../core/Components';
-import * as PIXI from 'pixi.js';
-import { Game } from '../Game';
+import { Renderable } from "../core/Components";
+import * as PIXI from "pixi.js";
+import { Game } from "../Game";
 
 export default class Image implements Renderable {
   private pixi: PIXI.Sprite;

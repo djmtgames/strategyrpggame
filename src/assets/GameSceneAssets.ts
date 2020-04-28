@@ -1,8 +1,8 @@
-import Garlic from './images/garlic.png';
-import Gold from './images/gold.png';
-import Peasant from './images/peasant.png';
-import Container from '../ui/Container';
-import Image from '../ui/Image';
+import Garlic from "./images/garlic.png";
+import Gold from "./images/gold.png";
+import Peasant from "./images/peasant.png";
+import Container from "../ui/Container";
+import Image from "../ui/Image";
 
 export default class GameSceneAssets {
   resourceContainerAssets(container: Container) {

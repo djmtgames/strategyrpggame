@@ -1,15 +1,15 @@
-import Scene from './Scene';
-import { Game } from '../Game';
-import GameSceneAssets from '../assets/GameSceneAssets';
-import AttackEvent from '../events/AttackEvent';
-import SizedSet from '../utils/SizedSet';
-import { Button, BlankButton } from '../ui/Button';
-import ScrollBox from '../ui/ScrollBox';
-import GameErrorEvent from '../events/GameErrorEvent';
-import { NOOP } from '../utils/Utils';
-import Container from '../ui/Container';
-import Label from '../ui/Label';
-import Style from '../ui/Style';
+import Scene from "./Scene";
+import { Game } from "../Game";
+import GameSceneAssets from "../assets/GameSceneAssets";
+import AttackEvent from "../events/AttackEvent";
+import SizedSet from "../utils/SizedSet";
+import { Button, BlankButton } from "../ui/Button";
+import ScrollBox from "../ui/ScrollBox";
+import GameErrorEvent from "../events/GameErrorEvent";
+import { NOOP } from "../utils/Utils";
+import Container from "../ui/Container";
+import Label from "../ui/Label";
+import Style from "../ui/Style";
 
 interface Resource {
   name: string;
@@ -28,62 +28,62 @@ const BaseFoodProductionRange: [number, number] = [8, 12];
 const BaseTaxRate: number = 1;
 
 const Peasants = {
-  name: 'Peasants',
+  name: "Peasants",
   value: 10,
 };
 
 const Food = {
-  name: 'Food',
+  name: "Food",
   value: 100,
 };
 
 const Population = {
-  name: 'Popl',
+  name: "Popl",
   value: 10,
 };
 
 const Happiness = {
-  name: 'Happiness',
+  name: "Happiness",
   value: 100,
 };
 
 const Gold = {
-  name: 'Gold',
+  name: "Gold",
   value: 100,
 };
 
 const choiceStyles = {
-  default: Style.from({ fill: 'black' }),
-  hover: Style.from({ fill: 'white' }),
-  selected: Style.from({ fill: 'yellow' }),
-  selectedHovered: Style.from({ fill: 'red' }),
+  default: Style.from({ fill: "black" }),
+  hover: Style.from({ fill: "white" }),
+  selected: Style.from({ fill: "yellow" }),
+  selectedHovered: Style.from({ fill: "red" }),
 };
 
 const resourceTextStyles = Style.from({
-  fontFamily: 'Courier',
-  fontWeight: 'Bold',
+  fontFamily: "Courier",
+  fontWeight: "Bold",
 });
 
 // These should be a class or something more complex since a lot of the logic then has to be implemented in the GameScene instead of somewhere else.
 let baseDecisions: Decision[] = [
   {
-    name: 'Collect Taxes',
+    name: "Collect Taxes",
     value: 0,
   },
   {
-    name: 'Construct a new building',
+    name: "Construct a new building",
     value: 1,
   },
   {
-    name: 'Train troops',
+    name: "Train troops",
     value: 2,
   },
   {
-    name: 'Move troops',
+    name: "Move troops",
     value: 3,
   },
   {
-    name: 'Sell food at the market',
+    name: "Sell food at the market",
     value: 4,
   },
 ];
@@ -127,7 +127,7 @@ export default class GameScene extends Scene {
     this.selectedChoices = new SizedSet(2);
     this.eventQueue = new ScrollBox({ onUpdate: NOOP });
     this.endTurnButton = new Button({
-      text: 'End Turn',
+      text: "End Turn",
       width: Button.AUTO,
       height: 25,
       isActive: (b) => {
@@ -157,9 +157,9 @@ export default class GameScene extends Scene {
   }
 
   update(g: Game) {
-    this.foodResource.setText(`${this.resources['Food'].value}`);
-    this.goldResource.setText(`${this.resources['Gold'].value}`);
-    this.populationResource.setText(`${this.resources['Population'].value}`);
+    this.foodResource.setText(`${this.resources["Food"].value}`);
+    this.goldResource.setText(`${this.resources["Gold"].value}`);
+    this.populationResource.setText(`${this.resources["Population"].value}`);
     this.turnDisplay.setText(`Turn ${this.turnNumber}`);
     this.eventQueue.messages = g.events.all().map((x) => x.display());
     this.eventQueue.update();
@@ -171,16 +171,16 @@ export default class GameScene extends Scene {
     this.foodPurchase = new Button({
       width: 0,
       height: 0,
-      text: 'Purchase 20 food for 5G',
+      text: "Purchase 20 food for 5G",
       isActive: NOOP,
       mouseout: NOOP,
       mouseover: NOOP,
       click: () => {
-        if (this.resources['Gold'].value < 20) {
+        if (this.resources["Gold"].value < 20) {
           return;
         }
-        this.resources['Food'].value += 20;
-        this.resources['Gold'].value -= 5;
+        this.resources["Food"].value += 20;
+        this.resources["Gold"].value -= 5;
       },
     });
     this.purchaseContainer.add(this.foodPurchase);
@@ -189,13 +189,24 @@ export default class GameScene extends Scene {
   private setResourceContainer() {
     this.resourceContainer.setX(650);
 
-    this.foodResource = Label.from('XXX FOOD').setStyle(resourceTextStyles).setX(30);
+    this.foodResource = Label.from("XXX FOOD")
+      .setStyle(resourceTextStyles)
+      .setX(30);
 
-    this.goldResource = Label.from('XXX GOLD').setStyle(resourceTextStyles).setX(30).setY(30);
+    this.goldResource = Label.from("XXX GOLD")
+      .setStyle(resourceTextStyles)
+      .setX(30)
+      .setY(30);
 
-    this.populationResource = Label.from('XXX POPL').setStyle(resourceTextStyles).setX(30).setY(60);
+    this.populationResource = Label.from("XXX POPL")
+      .setStyle(resourceTextStyles)
+      .setX(30)
+      .setY(60);
 
-    this.turnDisplay = Label.from('XXX TURN').setStyle(resourceTextStyles).setX(30).setY(100);
+    this.turnDisplay = Label.from("XXX TURN")
+      .setStyle(resourceTextStyles)
+      .setX(30)
+      .setY(100);
 
     this.gameSceneAssets.resourceContainerAssets(this.resourceContainer);
     this.resourceContainer.add(this.foodResource);
@@ -244,7 +255,9 @@ export default class GameScene extends Scene {
     this.endTurnButton.setX(325).setY(500);
 
     function randomIntFromInterval(minMax: [number, number]) {
-      return Math.floor(Math.random() * (minMax[1] - minMax[0] + 1) + minMax[0]);
+      return Math.floor(
+        Math.random() * (minMax[1] - minMax[0] + 1) + minMax[0]
+      );
     }
 
     this.endTurnButton.onClick(() => {
@@ -259,8 +272,8 @@ export default class GameScene extends Scene {
           fn: (choice) => {
             switch (choice) {
               case 0:
-                this.resources['Gold'].value += Math.floor(
-                  this.resources['Population'].value * BaseTaxRate
+                this.resources["Gold"].value += Math.floor(
+                  this.resources["Population"].value * BaseTaxRate
                 );
                 break;
               case 1:
@@ -282,16 +295,27 @@ export default class GameScene extends Scene {
         });
 
         // First, grow food based on current peasant population. Peasants produce a random amount in a range.
-        const foodAmount: number = randomIntFromInterval(BaseFoodProductionRange);
-        console.log('You grew ' + this.resources['Population'].value * foodAmount + ' this turn.');
-        this.resources['Food'].value += this.resources['Population'].value * foodAmount;
+        const foodAmount: number = randomIntFromInterval(
+          BaseFoodProductionRange
+        );
+        console.log(
+          "You grew " +
+            this.resources["Population"].value * foodAmount +
+            " this turn."
+        );
+        this.resources["Food"].value +=
+          this.resources["Population"].value * foodAmount;
         // --- Generate Beginning of Turn Event
         // -- Add an Event Log
         if (Math.random() > 0.8) {
-          const lostFood: number = Math.ceil(this.resources['Food'].value * 0.2);
-          const lostGold: number = Math.ceil(this.resources['Gold'].value * 0.2);
-          this.resources['Food'].value -= lostFood;
-          this.resources['Gold'].value -= lostGold;
+          const lostFood: number = Math.ceil(
+            this.resources["Food"].value * 0.2
+          );
+          const lostGold: number = Math.ceil(
+            this.resources["Gold"].value * 0.2
+          );
+          this.resources["Food"].value -= lostFood;
+          this.resources["Gold"].value -= lostGold;
           g.events.add(
             new AttackEvent(
               `[Turn ${this.turnNumber}] You were attacked by bandits! You lost ${lostFood} food and ${lostGold} gold!`
@@ -300,38 +324,45 @@ export default class GameScene extends Scene {
         }
 
         // Then consume food based on current population. Pop consumes a static amount.
-        this.resources['Food'].value -= this.resources['Population'].value * FoodConsumptionRate;
+        this.resources["Food"].value -=
+          this.resources["Population"].value * FoodConsumptionRate;
         console.log(
-          'You consumed ' + this.resources['Population'].value * FoodConsumptionRate + ' this turn.'
+          "You consumed " +
+            this.resources["Population"].value * FoodConsumptionRate +
+            " this turn."
         );
 
         // TODO: Idea of leaving and starving. Emmigration could mean other players fiefs grow when your people leave. So some starve, some migrate.
         // If you are out of food, 10% will starve.
-        if (this.resources['Food'].value <= 0) {
-          this.resources['Population'].value -= Math.floor(
-            this.resources['Population'].value * PopulationDeathRate
+        if (this.resources["Food"].value <= 0) {
+          this.resources["Population"].value -= Math.floor(
+            this.resources["Population"].value * PopulationDeathRate
           );
           console.log(
-            'Your people are staving and ' +
-              Math.floor(this.resources['Population'].value * PopulationDeathRate) +
-              ' died'
+            "Your people are staving and " +
+              Math.floor(
+                this.resources["Population"].value * PopulationDeathRate
+              ) +
+              " died"
           );
-          this.resources['Food'].value = 0;
+          this.resources["Food"].value = 0;
           // Otherwise you experience a 20% population growth.
         } else {
-          this.resources['Population'].value += Math.floor(
-            this.resources['Population'].value * PopulationGrowthRate
+          this.resources["Population"].value += Math.floor(
+            this.resources["Population"].value * PopulationGrowthRate
           );
         }
 
-        if (this.resources['Population'].value <= 0) {
-          this.resources['Population'].value = 0;
+        if (this.resources["Population"].value <= 0) {
+          this.resources["Population"].value = 0;
         }
 
         this.turnNumber++;
         this.selectedChoices.empty();
       } else {
-        g.events.add(new GameErrorEvent('You must chose 2 actions to end your turn.'));
+        g.events.add(
+          new GameErrorEvent("You must chose 2 actions to end your turn.")
+        );
       }
     });
   }
