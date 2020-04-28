@@ -1,17 +1,17 @@
-import * as Pixi from "pixi.js";
+import * as PIXI from "pixi.js";
 import Garlic from "./images/garlic.png";
 import Gold from "./images/gold.png";
 import Peasant from "./images/peasant.png";
 
 export default class GameSceneAssets {
-  resourceContainerAssets(container: Pixi.Container) {
+  resourceContainerAssets(container: PIXI.Container) {
     this.foodAssets(container);
     this.goldAssets(container);
     this.populationAssets(container);
   }
 
-  private foodAssets(container: Pixi.Container) {
-    const asset = Pixi.Sprite.from(Garlic);
+  private foodAssets(container: PIXI.Container) {
+    const asset = PIXI.Sprite.from(Garlic);
 
     asset.x = 0;
     asset.y = 0;
@@ -20,8 +20,8 @@ export default class GameSceneAssets {
     container.addChild(asset);
   }
 
-  private goldAssets(container: Pixi.Container) {
-    const asset = Pixi.Sprite.from(Gold);
+  private goldAssets(container: PIXI.Container) {
+    const asset = PIXI.Sprite.from(Gold);
 
     asset.x = 0;
     asset.y = 30;
@@ -30,8 +30,8 @@ export default class GameSceneAssets {
     container.addChild(asset);
   }
 
-  private populationAssets(container: Pixi.Container) {
-    const asset = Pixi.Sprite.from(Peasant);
+  private populationAssets(container: PIXI.Container) {
+    const asset = PIXI.Sprite.from(Peasant);
 
     asset.x = 0;
     asset.y = 60;

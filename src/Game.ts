@@ -1,4 +1,4 @@
-import * as Pixi from "pixi.js";
+import * as PIXI from "pixi.js";
 import Scene from "./scenes/Scene";
 import Keys from "./Keys";
 import Mouse from "./Mouse";
@@ -12,7 +12,7 @@ export interface Config {
 }
 
 export class Game {
-  app: Pixi.Application;
+  app: PIXI.Application;
   previousScene: Scene;
   activeScene: Scene;
   keys: Keys;
@@ -25,7 +25,7 @@ export class Game {
     this.mouse = new Mouse();
     this.state = new StateManager();
     this.events = new EventQueue();
-    this.app = new Pixi.Application({ backgroundColor: 0x109bb });
+    this.app = new PIXI.Application({ backgroundColor: 0x109bb });
     this.activeScene = config.scene;
 
     document.body.appendChild(this.app.view);
@@ -35,7 +35,7 @@ export class Game {
     });
   }
 
-  display(): Pixi.Application {
+  display(): PIXI.Application {
     return this.app;
   }
 
