@@ -1,6 +1,7 @@
-import * as PIXI from "pixi.js";
-import { Game } from "../Game";
-import { Renderable } from "../core/Components";
+import * as PIXI from 'pixi.js';
+import { Game } from '../Game';
+import { Renderable } from '../core/Components';
+import Style from './Style';
 
 type Constructor<T = {}> = new (...args: any[]) => T;
 
@@ -39,15 +40,15 @@ const Positionable = <TBase extends Constructor>(Base: TBase) => {
 };
 
 export default class Label implements Renderable {
-  private pixi: PIXI.Text = new PIXI.Text("");
-  private text: string = "";
+  private pixi: PIXI.Text = new PIXI.Text('');
+  private text: string = '';
 
   static from(text: string): Label {
     return new Label().setText(text);
   }
 
-  setStyle(styles: PIXI.TextStyle): this {
-    this.pixi.style = styles;
+  setStyle(styles: Style): this {
+    this.pixi.style = styles.getPixi();
     return this;
   }
 

@@ -1,5 +1,4 @@
 import Scene from './Scene';
-import * as PIXI from 'pixi.js';
 import { Game } from '../Game';
 import GameSceneAssets from '../assets/GameSceneAssets';
 import AttackEvent from '../events/AttackEvent';
@@ -10,6 +9,7 @@ import GameErrorEvent from '../events/GameErrorEvent';
 import { NOOP } from '../utils/Utils';
 import Container from '../ui/Container';
 import Label from '../ui/Label';
+import Style from '../ui/Style';
 
 interface Resource {
   name: string;
@@ -53,13 +53,13 @@ const Gold = {
 };
 
 const choiceStyles = {
-  default: new PIXI.TextStyle({ fill: 'black' }),
-  hover: new PIXI.TextStyle({ fill: 'white' }),
-  selected: new PIXI.TextStyle({ fill: 'yellow' }),
-  selectedHovered: new PIXI.TextStyle({ fill: 'red' }),
+  default: Style.from({ fill: 'black' }),
+  hover: Style.from({ fill: 'white' }),
+  selected: Style.from({ fill: 'yellow' }),
+  selectedHovered: Style.from({ fill: 'red' }),
 };
 
-const resourceTextStyles = new PIXI.TextStyle({
+const resourceTextStyles = Style.from({
   fontFamily: 'Courier',
   fontWeight: 'Bold',
 });
