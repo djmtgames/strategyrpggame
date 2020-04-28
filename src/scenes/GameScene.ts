@@ -1,6 +1,7 @@
 import Scene from "./Scene";
 import { Game } from "../Game";
 import GameSceneAssets from "../assets/GameSceneAssets";
+import { MapAsset, BlankMapAsset } from "../assets/MapAsset";
 import AttackEvent from "../events/AttackEvent";
 import SizedSet from "../utils/SizedSet";
 import { Button, BlankButton } from "../ui/Button";
@@ -99,6 +100,7 @@ export default class GameScene extends Scene {
     */
   resources: { [x: string]: Resource } = {};
   decisions: { label: Button; decision: Decision }[] = [];
+  mapAssetContainer: Container = new Container();
   purchaseContainer: Container = new Container();
   decisionContainer: Container = new Container();
   resourceContainer: Container = new Container();
@@ -113,6 +115,7 @@ export default class GameScene extends Scene {
   gameSceneAssets: GameSceneAssets = new GameSceneAssets();
   endTurnButton: any;
   foodPurchase: Button = BlankButton;
+  mapAsset: MapAsset = BlankMapAsset;
   turnNumber: number = 0;
 
   create(g: Game) {
@@ -149,6 +152,8 @@ export default class GameScene extends Scene {
     this.setDecisionContainer();
     this.setEndTurnButton(g);
 
+    // g.app.stage.addChild(this.mapAsset.mapContainer);
+    this.mapAssetContainer.addToStage(g);
     this.purchaseContainer.addToStage(g);
     this.decisionContainer.addToStage(g);
     this.resourceContainer.addToStage(g);
@@ -165,6 +170,11 @@ export default class GameScene extends Scene {
     this.eventQueue.update();
     this.endTurnButton.update();
     this.choices.map((b) => b.update());
+  }
+
+  private setMapAssetContainer() {
+    this.mapAsset = new MapAsset(g.app);
+    this.mapAssetContainer.add(this.mapAsset)
   }
 
   private setPurchaseContainer() {
