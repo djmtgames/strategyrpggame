@@ -25,9 +25,8 @@ export class Game {
     this.mouse = new Mouse();
     this.state = new StateManager();
     this.events = new EventQueue();
-    this.app = new PIXI.Application({ backgroundColor: 0x109bb });
+    this.app = new PIXI.Application({ backgroundColor: 0xffffff });
     this.activeScene = config.scene;
-
     document.body.appendChild(this.app.view);
     this.activeScene.create(this);
     this.app.ticker.add((delta) => {
