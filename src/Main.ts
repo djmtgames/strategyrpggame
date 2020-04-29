@@ -3,8 +3,8 @@ import { Config, Game } from "./core/Game";
 import GameScene from "./scenes/GameScene";
 
 const config: Config = {
-  width: 800,
-  height: 600,
+  width: 1920,
+  height: 1080,
   scene: new GameScene(),
 };
 
