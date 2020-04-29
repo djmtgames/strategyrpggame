@@ -1,5 +1,5 @@
 import { AnyConstructor, Base, Mixin } from "../../utils/Utils";
-import { Game } from "../../Game";
+import { Game } from "../Game";
 
 export const Renderable = <T extends AnyConstructor<object>>(base: T) =>
   class Renderable extends Base {
