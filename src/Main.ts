@@ -1,5 +1,5 @@
 import InitialScene from "./scenes/InitialScene";
-import { Config, Game } from "./Game";
+import { Config, Game } from "./core/Game";
 import GameScene from "./scenes/GameScene";
 
 const config: Config = {

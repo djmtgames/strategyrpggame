@@ -1,5 +1,5 @@
 import Scene from "./Scene";
-import { Game } from "../Game";
+import { Game } from "../core/Game";
 import GameSceneAssets from "../assets/GameSceneAssets";
 import { MapAsset } from "../assets/MapAsset";
 import AttackEvent from "../events/AttackEvent";

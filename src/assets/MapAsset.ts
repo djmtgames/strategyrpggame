@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { Game } from "../Game";
+import { Game } from "../core/Game";
 import { Renderable } from "../core/mixins/Renderable";
 import { Positionable } from "../core/mixins/Positionable";
 import { Point } from "../utils/Utils";
