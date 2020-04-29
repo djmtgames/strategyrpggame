@@ -1,12 +1,11 @@
 import * as PIXI from "pixi.js";
-import { Game } from "../Game";
-import { Renderable } from "../core/Components";
 import Style from "./Style";
-import { Positionable } from "../utils/Utils";
+import { Positionable } from "../core/mixins/Positionable";
+import { Renderable } from "../core/mixins/Renderable";
 
-class Label implements Renderable {
-  private pixi: PIXI.Text = new PIXI.Text("");
+class Label extends Positionable(Renderable(Array)) {
   private text: string = "";
+  protected pixi: PIXI.Text = new PIXI.Text("");
 
   static from(text: string): Label {
     return new Label().setText(text);
@@ -17,28 +16,10 @@ class Label implements Renderable {
     return this;
   }
 
-  setY(n: number): this {
-    this.pixi.y = n;
-    return this;
-  }
-
-  setX(n: number): this {
-    this.pixi.x = n;
-    return this;
-  }
-
   setText(msg: string): this {
     this.text = msg;
     this.pixi.text = msg;
     return this;
-  }
-
-  getPixi(): PIXI.Container {
-    return this.pixi;
-  }
-
-  addToStage(g: Game): void {
-    g.app.stage.addChild(this.pixi);
   }
 }
 

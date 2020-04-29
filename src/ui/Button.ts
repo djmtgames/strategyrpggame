@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
-import { Game } from "../Game";
-import { Renderable } from "../core/Components";
 import { NOOP } from "../utils/Utils";
+import { Positionable } from "../core/mixins/Positionable";
+import { Renderable } from "../core/mixins/Renderable";
 import Style from "./Style";
 
 export interface ButtonConfig {
@@ -14,16 +14,15 @@ export interface ButtonConfig {
   click: (_: Button) => void;
 }
 
-export class Button implements Renderable {
+export class Button extends Positionable(Renderable(Object)) {
   static AUTO: "__auto" = "__auto";
-  private pixi: PIXI.Text;
-  private x: number = 0;
-  private y: number = 0;
+  protected pixi: PIXI.Text;
   private isMouseOver = false;
   private isMouseDown: boolean = false;
   private isActive: (_: Button) => void;
 
   constructor(config: ButtonConfig) {
+    super();
     this.pixi = new PIXI.Text(config.text);
     this.pixi.interactive = true;
     this.pixi.buttonMode = true;
@@ -43,30 +42,12 @@ export class Button implements Renderable {
     this.isActive = config.isActive;
   }
 
-  getPixi(): PIXI.Text {
-    return this.pixi;
-  }
-
-  addToStage(g: Game): void {
-    g.app.stage.addChild(this.pixi);
-  }
-
   mouseOver(): boolean {
     return this.isMouseOver;
   }
 
   mouseDown(): boolean {
     return this.isMouseDown;
-  }
-
-  setY(n: number): this {
-    this.pixi.y = n;
-    return this;
-  }
-
-  setX(n: number): this {
-    this.pixi.x = n;
-    return this;
   }
 
   setStyle(styles: Style): this {
