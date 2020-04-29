@@ -1,7 +1,7 @@
 import Scene from "./Scene";
-import { Game } from "../Game";
+import { Game } from "../core/Game";
 import GameSceneAssets from "../assets/GameSceneAssets";
-import { MapAsset, BlankMapAsset } from "../assets/MapAsset";
+import { MapAsset } from "../assets/MapAsset";
 import AttackEvent from "../events/AttackEvent";
 import SizedSet from "../utils/SizedSet";
 import { Button, BlankButton } from "../ui/Button";
@@ -90,14 +90,6 @@ let baseDecisions: Decision[] = [
 ];
 
 export default class GameScene extends Scene {
-  /*
-      - CREATE resources (Food, Population, Happiness, Gold)
-      - Manage resource gain and drains (each resource should acrew on some schedule, but go down on another)
-         - How is that visually represented?
-         - What is the interactivity involved?
-      - Map interface.
-      - Details for city/fief/township/etc/etc/etc
-    */
   resources: { [x: string]: Resource } = {};
   decisions: { label: Button; decision: Decision }[] = [];
   mapAssetContainer: Container = new Container();
@@ -115,7 +107,7 @@ export default class GameScene extends Scene {
   gameSceneAssets: GameSceneAssets = new GameSceneAssets();
   endTurnButton: any;
   foodPurchase: Button = BlankButton;
-  mapAsset: MapAsset = BlankMapAsset;
+  mapAsset: MapAsset;
   turnNumber: number = 0;
 
   create(g: Game) {
@@ -170,10 +162,11 @@ export default class GameScene extends Scene {
     this.eventQueue.update();
     this.endTurnButton.update();
     this.choices.map((b) => b.update());
+    this.mapAsset.update(g);
   }
 
   private setMapAssetContainer(g: Game) {
-    this.mapAsset = new MapAsset(g.app);
+    this.mapAsset = new MapAsset(g);
     this.mapAssetContainer.add(this.mapAsset);
   }
 

@@ -16,4 +16,8 @@ export default class SizedArray<T> {
     }
     return this;
   }
+
+  last(): T {
+    return this.internals[this.internals.length - 1];
+  }
 }

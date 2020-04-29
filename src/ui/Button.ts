@@ -23,23 +23,30 @@ export class Button extends Positionable(Renderable(Object)) {
 
   constructor(config: ButtonConfig) {
     super();
+    this.isActive = config.isActive;
+
     this.pixi = new PIXI.Text(config.text);
     this.pixi.interactive = true;
     this.pixi.buttonMode = true;
+
     this.pixi.on("pointerup", () => {
       config.click(this);
       this.isMouseDown = false;
     });
+
     this.pixi.on("pointerover", () => {
       this.isMouseOver = true;
       config.mouseover(this);
     });
+
     this.pixi.on("pointerout", () => {
       this.isMouseOver = false;
       config.mouseout(this);
     });
-    this.pixi.on("pointerdown", () => (this.isMouseDown = true));
-    this.isActive = config.isActive;
+
+    this.pixi.on("pointerdown", () => {
+      this.isMouseDown = true;
+    });
   }
 
   mouseOver(): boolean {

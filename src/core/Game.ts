@@ -1,9 +1,9 @@
 import * as PIXI from "pixi.js";
-import Scene from "./scenes/Scene";
-import Keys from "./core/inputs/Keys";
-import Mouse from "./core/inputs/Mouse";
+import Scene from "../scenes/Scene";
+import Keys from "./inputs/Keys";
+import Mouse from "./inputs/Mouse";
 import StateManager from "./StateManager";
-import EventQueue from "./events/EventQueue";
+import EventQueue from "../events/EventQueue";
 
 export interface Config {
   width: number;
@@ -31,6 +31,7 @@ export class Game {
     this.activeScene.create(this);
     this.app.ticker.add((delta) => {
       this.activeScene.update(this, delta);
+      this.keys.update();
     });
   }
 
