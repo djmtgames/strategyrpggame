@@ -1,43 +1,41 @@
 import * as PIXI from "pixi.js";
 import { Game } from "../Game";
-import { Renderable } from "../core/Components";
+import { Renderable } from "../core/mixins/Renderable";
+import { Positionable } from "../core/mixins/Positionable";
+import { Point } from "../utils/Utils";
 import Map from "./maps/medieval-map.png";
 
-export class MapAsset implements Renderable {
-  private app: PIXI.Application;
-  private moveDistanceX: number;
-  private moveDistanceY: number;
-  private pixi: PIXI.Sprite;
-  private _y: number = 0;
-  private _x: number = 0;
-  private _scale_y: number = 0;
-  private _scale_x: number = 0;
+export class MapAsset extends Positionable(Renderable(Object)) {
+  protected pixi: PIXI.Sprite;
+  private moveDistance: Point;
+  private scale: Point = { x: 0, y: 0 };
 
-  constructor(app: PIXI.Application) {
-    this.app = app;
+  constructor(game: Game) {
+    super();
     this.pixi = PIXI.Sprite.from(Map);
 
-    this.setScaleY(0.5)
-        .setScaleX(0.5)
-        .setY(-350)
-        .setX(-475);
+    this.setScaleY(0.5).setScaleX(0.5).setY(-350).setX(-475);
 
-    this.moveDistanceX = this.app?.view.width / 2;
-    this.moveDistanceY = this.app?.view.height / 2;
+    this.moveDistance = {
+      x: game.app.view.width / 2,
+      y: game.app.view.height / 2,
+    };
+  }
 
-    document.addEventListener("keydown", (key: { keyCode: number }): void => {
-      switch (key.keyCode) {
-        case 87:
+  update(g: Game) {
+    g.keys.last.map((keyName) => {
+      switch (keyName) {
+        case "KeyW":
           this.moveUp();
           break;
-        case 83:
-          this.moveDown();
+        case "KeyS":
+          this.moveDown(g);
           break;
-        case 65:
+        case "KeyA":
           this.moveLeft();
           break;
-        case 68:
-          this.moveRight();
+        case "KeyD":
+          this.moveRight(g);
           break;
         default:
           return;
@@ -46,76 +44,46 @@ export class MapAsset implements Renderable {
   }
 
   private setScaleY(n: number): this {
-    this._scale_y = n;
+    this.scale.y = n;
     this.pixi.scale.y = n;
     return this;
   }
 
   private setScaleX(n: number): this {
-    this._scale_x = n;
+    this.scale.x = n;
     this.pixi.scale.x = n;
     return this;
   }
 
-  private setY(n: number): this {
-    this._y = n;
-    this.pixi.y = n;
-    return this;
-  }
-
-  private get y(): number {
-    return this._y;
-  }
-
-  private setX(n: number): this {
-    this._x = n;
-    this.pixi.x = n;
-    return this;
-  }
-
-  private get x(): number {
-    return this._x;
-  }
-  
-  getPixi(): PIXI.Sprite {
-    return this.pixi;
-  }
-
-  addToStage(g: Game): void {
-    g.app.stage.addChild(this.pixi);
-  }
-
   private moveUp(): void {
-    if (this.y + this.moveDistanceY >= 0) {
+    if (this.y + this.moveDistance.y >= 0) {
       this.setY(0);
     } else {
-      this.setY(this.y + this.moveDistanceY);
+      this.setY(this.y + this.moveDistance.y);
     }
   }
 
-  private moveDown(): void {
-    if (this.y + this.moveDistanceY <= 0) {
-      this.setY(-this.app.view.height);
+  private moveDown(g: Game): void {
+    if (this.y + this.moveDistance.y <= 0) {
+      this.setY(-g.app.view.height);
     } else {
-      this.setY(this.y - this.moveDistanceY);
+      this.setY(this.y - this.moveDistance.y);
     }
   }
 
   private moveLeft(): void {
-    if (this.x + this.moveDistanceX >= 0) {
+    if (this.x + this.moveDistance.x >= 0) {
       this.setX(0);
     } else {
-      this.setX(this.x + this.moveDistanceX);
+      this.setX(this.x + this.moveDistance.x);
     }
   }
 
-  private moveRight(): void {
-    if (this.x + this.moveDistanceX <= 0) {
-      this.setX(-this.app?.view.width);
+  private moveRight(g: Game): void {
+    if (this.x + this.moveDistance.x <= 0) {
+      this.setX(-g.app.view.width);
     } else {
-      this.setX(this.x - this.moveDistanceX);
+      this.setX(this.x - this.moveDistance.x);
     }
   }
 }
-
-export const BlankMapAsset = new MapAsset(new PIXI.Application());

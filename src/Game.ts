@@ -31,6 +31,7 @@ export class Game {
     this.activeScene.create(this);
     this.app.ticker.add((delta) => {
       this.activeScene.update(this, delta);
+      this.keys.update();
     });
   }
 
