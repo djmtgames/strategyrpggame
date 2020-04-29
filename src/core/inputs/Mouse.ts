@@ -1,9 +1,5 @@
 import SizedArray from "../../utils/SizedArray";
-
-interface Point {
-  x: number;
-  y: number;
-}
+import { Point } from "../../utils/Utils";
 
 enum MouseButton {
   Left,

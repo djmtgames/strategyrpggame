@@ -1,37 +1,37 @@
+import * as PIXI from "pixi.js";
 export const NOOP = () => undefined;
 
-type Constructor<T = {}> = new (...args: any[]) => T;
+export type Point = { x: number; y: number };
+export type Size = { width: number; height: number };
+export type Bounds = Point & Size;
 
-export const Positionable = <TBase extends Constructor>(Base: TBase) => {
-  return class extends Base {
-    private _x: number = 0;
-    private _y: number = 0;
-    private pixi: PIXI.DisplayObject = new PIXI.DisplayObject();
+export class Base {
+  initialize<T extends Base>(props?: Partial<T>) {
+    props && Object.assign(this, props);
+  }
 
-    get x(): number {
-      return this._x;
-    }
+  static new<T extends typeof Base>(
+    this: T,
+    props?: Partial<InstanceType<T>>
+  ): InstanceType<T> {
+    const instance = new this();
+    instance.initialize<InstanceType<T>>(props);
+    return instance as InstanceType<T>;
+  }
+}
 
-    get y(): number {
-      return this._y;
-    }
+export type BaseConstructor = typeof Base;
+export type AnyFunction<A = any> = (...input: any[]) => A;
+export type AnyConstructor<A = object> = new (...input: any[]) => A;
 
-    setY(n: number): this {
-      this.pixi.y = n;
-      return this;
-    }
+export type Mixin<T extends AnyFunction> = InstanceType<ReturnType<T>>;
 
-    setX(n: number): this {
-      this.pixi.x = n;
-      return this;
-    }
+export type MixinConstructor<T extends AnyFunction> = T extends AnyFunction<
+  infer M
+>
+  ? M extends AnyConstructor<Base>
+    ? M & BaseConstructor
+    : M
+  : ReturnType<T>;
 
-    setPos({ x, y }: PIXI.Point): this {
-      this._x = x;
-      this._y = y;
-      this.pixi.x = x;
-      this.pixi.y = y;
-      return this;
-    }
-  };
-};
+export type MixinFunction = (base: AnyConstructor) => AnyConstructor;

@@ -1,11 +1,13 @@
-import { Renderable } from "../core/Components";
 import * as PIXI from "pixi.js";
-import { Game } from "../Game";
+import { Bounds } from "../utils/Utils";
+import { Positionable } from "../core/mixins/Positionable";
+import { Renderable } from "../core/mixins/Renderable";
 
-export default class Image implements Renderable {
-  private pixi: PIXI.Sprite;
+export default class Image extends Positionable(Renderable(Object)) {
+  protected pixi: PIXI.Sprite;
 
   private constructor(path: string) {
+    super();
     this.pixi = PIXI.Sprite.from(path);
     return this;
   }
@@ -14,19 +16,11 @@ export default class Image implements Renderable {
     return new Image(path);
   }
 
-  setBounds(x: number, y: number, width: number, height: number): this {
+  setBounds({ x, y, width, height }: Bounds): this {
     this.pixi.x = x;
     this.pixi.y = y;
     this.pixi.width = width;
     this.pixi.height = height;
     return this;
-  }
-
-  getPixi(): PIXI.Container {
-    return this.pixi;
-  }
-
-  addToStage(g: Game): void {
-    g.app.stage.addChild(this.pixi);
   }
 }
