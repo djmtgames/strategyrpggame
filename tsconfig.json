@@ -7,8 +7,11 @@
     "lib": ["dom", "esnext"],
     "target": "es6",
     "moduleResolution": "node",
-    "traceResolution": true
+    "traceResolution": true,
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*", 
+    "globals.d.ts"
+  ],
   "exclude": ["node_modules"]
 }
