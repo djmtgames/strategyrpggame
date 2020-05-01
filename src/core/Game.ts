@@ -25,7 +25,11 @@ export class Game {
     this.mouse = new Mouse();
     this.state = new StateManager();
     this.events = new EventQueue();
-    this.app = new PIXI.Application({ backgroundColor: 0xffffff, width: config.width, height: config.height });
+    this.app = new PIXI.Application({
+      backgroundColor: 0xffffff,
+      width: config.width,
+      height: config.height,
+    });
     this.activeScene = config.scene;
     document.body.appendChild(this.app.view);
     this.activeScene.create(this);
