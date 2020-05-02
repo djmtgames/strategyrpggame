@@ -11,7 +11,7 @@ import { NOOP } from "../utils/Utils";
 import Container from "../ui/Container";
 import Label from "../ui/Label";
 import Style from "../ui/Style";
-import StateManager from "../StateManager";
+import StateManager from "../core/StateManager";
 import { collectTaxes } from "../core/decisions/CollectTaxes";
 import {
   populationGrowth,
