@@ -20,6 +20,7 @@ export class Base {
   }
 }
 
+export type Opaque<K, T> = T & { __TYPE__: K };
 export type BaseConstructor = typeof Base;
 export type AnyFunction<A = any> = (...input: any[]) => A;
 export type AnyConstructor<A = object> = new (...input: any[]) => A;
